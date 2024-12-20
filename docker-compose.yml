@@ -7,11 +7,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000" # Expõe a porta 8000 do contêiner para o host
-    depends_on:
-      - mongodb # Espera que o MongoDB esteja rodando
     networks:
       - customers_service_network
     environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin # Usuário root para o MongoDB
+      - MONGO_INITDB_ROOT_PASSWORD=password123 # Senha root
       - MONGO_URI=mongodb://mongodb:27017 # Variável de ambiente para conectar ao MongoDB
 
   mongodb:
