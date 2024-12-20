@@ -1,28 +1,27 @@
-# Usar a imagem mais recente do Python
-FROM python:3.13-alpine
+# Usar uma imagem oficial do Python
+FROM python:3.12-alpine
 
-# Definir o diretório de trabalho dentro do container como /app
+# Definir o diretório de trabalho
 WORKDIR /app
 
+# Instalar dependências do sistema necessárias para o projeto
 RUN apk update && apk add --no-cache \
     gcc \
     musl-dev \
     libffi-dev \
-    python3-dev \
-    build-base \
-    mongodb-tools \
-    mongodb \
-    vim 
+    python3-dev
 
-# Copiar o arquivo de dependências para o container
+# Copiar o arquivo de dependências para o contêiner
 COPY requirements.txt .
 
-# Instalar as dependências
-RUN pip install --no-cache-dir -r requirements.txt 
+# Instalar as dependências Python
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Verificar se o repositório já foi clonado e puxar as últimas atualizações
+# Copiar o código da aplicação para o contêiner
 COPY . /app/
 
+# Expor a porta onde o servidor FastAPI vai rodar
 EXPOSE 8000
 
-CMD ["python", "src/manage.py", "runserver","0.0.0.0:8000"]
+# Comando para rodar o servidor FastAPI com Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
