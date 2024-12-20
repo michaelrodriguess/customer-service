@@ -1,0 +1,41 @@
+#Python
+*.pyc
+*.pyo
+pycache/
+*.pyd
+*.pdb
+
+#Virtual Environment
+venv/
+.env/
+
+#Pytest
+.pytest_cache/
+.cache/
+*.log
+
+#IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*~
+*.sublime-workspace
+*.sublime-project
+
+#Docker
+*.pid
+logs/
+docker-compose.override.yml
+
+#Configurações locais
+.env
+.env.
+
+#Cache e compilação
+build/
+dist/
+*.egg-info/
+*.eggs
+*.manifest
+*.spec
+*.DS_Store
