@@ -1,4 +1,5 @@
 fastapi
 uvicorn
 pydantic
-pymongo
+asyncpg
+pydantic_settings
