@@ -1,15 +1,17 @@
+container_name: customer-service
+
 services:
   web:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - customer-database
     networks:
       - customers_service_network
-  db:
+  customer-database:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
