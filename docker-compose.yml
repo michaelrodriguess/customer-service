@@ -1,4 +1,4 @@
-version: "3.8"
+container_name: customer-service
 
 services:
   web:
@@ -6,30 +6,26 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000" # Expõe a porta 8000 do contêiner para o host
+      - "8000:8000"
+    depends_on:
+      - customer-database
     networks:
       - customers_service_network
+  customer-database:
+    image: postgres:latest
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin # Usuário root para o MongoDB
-      - MONGO_INITDB_ROOT_PASSWORD=password123 # Senha root
-      - MONGO_URI=mongodb://mongodb:27017 # Variável de ambiente para conectar ao MongoDB
-
-  mongodb:
-    image: mongo:6.0 # Usar a imagem oficial do MongoDB
-    container_name: mongodb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
     ports:
-      - "27017:27017" # Expõe a porta 27017 do MongoDB para o host
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin # Usuário root para o MongoDB
-      MONGO_INITDB_ROOT_PASSWORD: password123 # Senha root
-    volumes:
-      - mongo_data:/data/db # Volume persistente para os dados do MongoDB
+      - "5432:5432"
     networks:
-      - customers_service_network # Rede compartilhada
-
+      - customers_service_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
 volumes:
-  mongo_data: # Volume persistente
-
+  postgres_data:
 networks:
   customers_service_network:
-    driver: bridge # Usar a rede bridge para comunicação entre os contêineres
+    driver: bridge

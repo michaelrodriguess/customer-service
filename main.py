@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException, Request
+import asyncpg
+from contextlib import asynccontextmanager
+from settings import settings
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from mongodb import users_collection
-from bson import ObjectId
 
 app = FastAPI()
 
@@ -11,33 +12,36 @@ class User(BaseModel):
     email: str
 
 
-@app.post("/users/")
-async def create_user(request: Request):
+@asynccontextmanager
+async def get_db():
+    conn = await asyncpg.connect(settings.DATABASE_URL)
     try:
-        data = await request.json()
-        user = User(**data)
-        user_data = user.dict()
-        result = users_collection.insert_one(user_data)
+        yield conn
+    finally:
+        await conn.close()
 
-        return {"id": str(result.inserted_id)}
+
+async def create_user(conn, name: str, email: str):
+    query = """
+    INSERT INTO users (name, email)
+    VALUES ($1, $2)
+    RETURNING id
+    """
+    try:
+        async with conn.transaction():
+            user_id = await conn.fetchval(query, name, email)
+        return user_id
     except Exception as e:
-
         raise HTTPException(status_code=400, detail=str(e))
 
 
-class UpdateUser(BaseModel):
-    name: str = None
-    email: str = None
-    age: int = None
-
-
-@app.get("/users/{user_id}")
-async def get_user(user_id: str):
-    user = users_collection.find_one({"_id": ObjectId(user_id)})
-    if user:
-        return {
-            "name": user["name"],
-            "email": user["email"],
-        }
-
-    raise HTTPException(status_code=404, detail="User not found")
+@app.post("/users/")
+async def create_user_endpoint(user: User):
+    try:
+        async with get_db() as db:
+            user_id = await create_user(db, user.name, user.email)
+        return {"id": user_id, "name": user.name, "email": user.email}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
