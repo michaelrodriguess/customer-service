@@ -3,9 +3,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_HOST: str = (
-        "db"
-    )
+    DATABASE_HOST: str = "db"
     DATABASE_PORT: str = "5432"
     DATABASE_NAME: str = "mydb"
     DATABASE_USER: str = "postgres"

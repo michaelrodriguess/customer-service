@@ -1,7 +1,7 @@
 import asyncpg
 from contextlib import asynccontextmanager
 from settings import settings
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
