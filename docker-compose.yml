@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db  # Certifique-se de que o banco de dados esteja disponível antes do aplicativo web iniciar
+      - db
     networks:
       - customers_service_network
   db:
@@ -20,10 +20,10 @@ services:
     networks:
       - customers_service_network
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Volume para persistir dados do PostgreSQL
+      - postgres_data:/var/lib/postgresql/data
       - ./scripts:/docker-entrypoint-initdb.d
 volumes:
-  postgres_data:  # Volume persistente para PostgreSQL
+  postgres_data:
 networks:
-  customers_service_network:  # Rede de contêiner
+  customers_service_network:
     driver: bridge

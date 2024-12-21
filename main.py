@@ -12,7 +12,6 @@ class User(BaseModel):
     email: str
 
 
-# Contexto para obter a conexão com o banco de dados
 @asynccontextmanager
 async def get_db():
     conn = await asyncpg.connect(settings.DATABASE_URL)
@@ -22,7 +21,6 @@ async def get_db():
         await conn.close()
 
 
-# Função para criar um novo usuário
 async def create_user(conn, name: str, email: str):
     query = """
     INSERT INTO users (name, email)
@@ -37,7 +35,6 @@ async def create_user(conn, name: str, email: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# Endpoint para criação de usuário
 @app.post("/users/")
 async def create_user_endpoint(user: User):
     try:
