@@ -1,12 +1,16 @@
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
-    DATABASE_HOST: str = "customer-database"
-    DATABASE_PORT: str = "5432"
-    DATABASE_NAME: str = "mydb"
-    DATABASE_USER: str = "postgres"
-    DATABASE_PASSWORD: str = "password"
+    DATABASE_HOST: str = os.getenv("DATABASE_HOST")
+    DATABASE_PORT: str = os.getenv("DATABASE_PORT")
+    DATABASE_NAME: str = os.getenv("DATABASE_NAME")
+    DATABASE_USER: str = os.getenv("DATABASE_USER")
+    DATABASE_PASSWORD: str = os.getenv("DATABASE_PASSWORD")
 
     @property
     def DATABASE_URL(self) -> str:
