@@ -21,9 +21,9 @@ async def get_db():
         await conn.close()
 
 
-async def create_user(conn, name: str, email: str):
+async def create_customer(conn, name: str, email: str):
     query = """
-    INSERT INTO users (name, email)
+    INSERT INTO customers (name, email)
     VALUES ($1, $2)
     RETURNING id
     """
@@ -35,13 +35,18 @@ async def create_user(conn, name: str, email: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.post("/users/")
+@app.post("/customers/")
 async def create_user_endpoint(user: User):
     try:
         async with get_db() as db:
-            user_id = await create_user(db, user.name, user.email)
+            user_id = await create_customer(db, user.name, user.email)
         return {"id": user_id, "name": user.name, "email": user.email}
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/users")
+async def get_users():
+    return "hello world"

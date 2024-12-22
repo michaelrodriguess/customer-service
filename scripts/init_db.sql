@@ -1,5 +1,16 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS customers (
     id VARCHAR(26) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS address (
+    id VARCHAR(26) PRIMARY KEY,
+    customer_id VARCHAR(26) NOT NULL,
+    street VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );

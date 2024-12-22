@@ -1,31 +1,35 @@
-container_name: customer-service
+version: "3.9"
 
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: customer-service
     ports:
-      - "8000:8000"
+      - "6789:6789"
     depends_on:
       - customer-database
     networks:
-      - customers_service_network
+      - customers_network
+
   customer-database:
     image: postgres:latest
+    container_name: customer-database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
     ports:
-      - "5432:5432"
+      - "4213:5432"
     networks:
-      - customers_service_network
+      - customers_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts:/docker-entrypoint-initdb.d
 volumes:
   postgres_data:
+
 networks:
-  customers_service_network:
+  customers_network:
     driver: bridge
