@@ -1,4 +1,5 @@
 fastapi
 uvicorn
 pydantic
-pymongo
+pydantic[email]
+ulid-py
