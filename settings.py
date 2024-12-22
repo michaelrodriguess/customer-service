@@ -14,7 +14,6 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL(self) -> str:
-        """Cria a URL de conexão com o banco de dados."""
         return f"postgresql://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
 
 
