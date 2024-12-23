@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS customers (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NULL
 );
 
-CREATE UNIQUE INDEX customer_email on customers(email);
+CREATE UNIQUE INDEX customer_email_idx on customers(email);
