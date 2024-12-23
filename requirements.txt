@@ -1,4 +1,7 @@
 fastapi
 uvicorn
 pydantic
-pymongo
+psycopg2
+psycopg2-binary
+pydantic_settings
+python-dotenv
