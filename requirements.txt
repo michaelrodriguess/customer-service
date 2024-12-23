@@ -3,3 +3,7 @@ uvicorn
 pydantic
 pydantic[email]
 ulid-py
+psycopg2
+psycopg2-binary
+pydantic_settings
+python-dotenv
