@@ -12,6 +12,8 @@ services:
       - customer-database
     networks:
       - customers_network
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@customer-database:5432/mydb
 
   customer-database:
     image: postgres:latest
@@ -26,7 +28,7 @@ services:
       - customers_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./storage/scripts:/docker-entrypoint-initdb.d
+      - ./core/db/migrations:/docker-entrypoint-initdb.d
 volumes:
   postgres_data:
 
