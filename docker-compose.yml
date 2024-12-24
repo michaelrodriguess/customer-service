@@ -26,7 +26,7 @@ services:
       - customers_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./config/db/migrations:/docker-entrypoint-initdb.d
+      - ./config/migrations:/docker-entrypoint-initdb.d
 volumes:
   postgres_data:
 
