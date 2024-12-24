@@ -10,11 +10,9 @@ class CustomerService:
         self.storage = CustomerStorage()
 
     def get_customer_by_id(self, id: str) -> Customer:
-        self.logger.info(f"Getting customer by id...") 
+        self.logger.info(f"Getting customer by id...")
         return self.storage.get_customer_by_id(id)
         
     def get_all_customers(self) -> List[Customer]:
-        self.logger.info(f"Getting all customers...") 
+        self.logger.info(f"Getting all customers...")
         return self.storage.get_all_customers()
-        
-    
