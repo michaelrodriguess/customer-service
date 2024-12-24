@@ -12,8 +12,6 @@ services:
       - customer-database
     networks:
       - customers_network
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@customer-database:5432/mydb
 
   customer-database:
     image: postgres:latest

@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/")
-def index(request: Request):
-    return {"message": "Faith in god and children."}
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
