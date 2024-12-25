@@ -1,4 +1,4 @@
-from storage.customers_storage import CustomerStorage
+from config.customers_storage import CustomerStorage
 from models.customer import Customer, Customer_update
 
 

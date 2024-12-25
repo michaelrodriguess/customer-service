@@ -65,10 +65,8 @@ class CustomerStorage:
                 query = sql.SQL(
                     "UPDATE customers SET {set_string} WHERE id =%s RETURNING id,name,email,updated_at"
                 ).format(set_string=sql.SQL(set_string))
-                print(query)
-                newString = cursor.execute(query, list(update_data.values()) + [id])
 
-                print(newString)
+                cursor.execute(query, list(update_data.values()) + [id])
 
                 updated_customer = cursor.fetchone()
 
