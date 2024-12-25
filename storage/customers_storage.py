@@ -1,6 +1,7 @@
 from models.customer import Customer_update
-from db_conn import conn
+from .db_conn import conn
 from psycopg2 import sql, Error
+from datetime import datetime, timezone, timedelta
 
 
 class CustomerStorage:
@@ -9,22 +10,23 @@ class CustomerStorage:
         self.db = conn
 
     def update_customer(self, id: str, customer_update: Customer_update):
-
         try:
+            utc_minus_3 = timezone(timedelta(hours=-3))
             with self.db.cursor() as cursor:
                 query = sql.SQL(
                     """
                                 UPDATE customers
                                 SET name =%s, email =%s, updated_at=%s
                                 WHERE id = %s
-                                RETURNING id, name, email, age """
+                                RETURNING id, name, email, updated_at """
                 )
+                # TODO organizar o horário, tá batendo como utc:0, tmj
                 cursor.execute(
                     query,
                     (
                         customer_update.name,
                         customer_update.email,
-                        customer_update.updated_at,
+                        datetime.now(timezone.utc).astimezone(utc_minus_3),
                         id,
                     ),
                 )
@@ -43,9 +45,9 @@ class CustomerStorage:
                         "updated_at": updated_customer[3],
                     },
                 }
-        except (Error, ValueError) as e:
+        except (Error, ValueError):
             self.db.rollback()
-            raise e
+            raise
 
     def patch_customer(self, id: str, customer_update: Customer_update) -> dict:
         try:
@@ -58,13 +60,15 @@ class CustomerStorage:
                 if not update_data:
                     raise ValueError("body is empty")
 
-                set_string = ", ".join([f"{key} = %s" for key in update_data])
+                set_string = ",".join([f"{key} = %s" for key in update_data])
 
                 query = sql.SQL(
                     "UPDATE customers SET {set_string} WHERE id =%s RETURNING id,name,email,updated_at"
                 ).format(set_string=sql.SQL(set_string))
+                print(query)
+                newString = cursor.execute(query, list(update_data.values()) + [id])
 
-                cursor.execute(query, list(update_data.values) + [id])
+                print(newString)
 
                 updated_customer = cursor.fetchone()
 
@@ -76,6 +80,6 @@ class CustomerStorage:
                     "message": "Customer updated successfully",
                     "customer": updated_customer,
                 }
-        except (Error, ValueError) as e:
+        except (Error, ValueError):
             self.db.rollback()
-            raise e
+            raise
