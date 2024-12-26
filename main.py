@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from routes.customer_router import router as customer_router
+import logging
 
+
+logger = logging.getLogger(__name__)
 app = FastAPI()
 
 @app.get("/health")

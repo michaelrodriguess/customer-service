@@ -8,7 +8,7 @@ class CustomerStorage:
         self.db = db_conn
         
     def create_customer(self, customer: Customer) -> Customer:
-        self.logger.info(f"[STORAGE]: Creating customer with email={customer.email}")
+        self.logger.info("Inserting product in DB")
 
         try:
             with self.db.cursor() as cursor:
@@ -23,5 +23,5 @@ class CustomerStorage:
                 return customer
             
         except Exception as ex:
-            self.logger.error(f"Error in storage layer: {ex}")
+            self.logger.error(f"Failed to insert customer with this data:{customer}. Error: {ex}")
             raise

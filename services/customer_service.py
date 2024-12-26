@@ -8,9 +8,8 @@ class CustomerService:
         self.storage = CustomerStorage()
         
     def create_customer(self, customer: Customer):
-        self.logger.info(f"[SERVICE]: Creating customer with email={customer.email}")
-        try:     
-            return self.storage.create_customer(customer)
-        except Exception as ex:
-            self.logger.error(f"Error in service layer: {ex}")
-            raise
+        self.logger.info(f"Creating customer with this data={customer}")
+        return self.storage.create_customer(customer)
+    
+     
+     
