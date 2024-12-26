@@ -11,14 +11,14 @@ customer_router = APIRouter()
 logger = logging.getLogger(__name__)
 customer_service = CustomerService()
 
-
 @customer_router.delete("/customers/{customer_id}")
 def soft_delete_customer(customer_id: str):
-    logger.info(f"[ROUTER]: Soft deleting customer with id={customer_id}")
-    result = customer_service.delete_customer(customer_id)
+    try:
+        logger.info(f"Deleting customer with id={customer_id}")
+        customer_service.delete_customer(customer_id)
     
-    if result is None:
-        raise HTTPException(status_code=404, detail="Customer not found or already inactive.")
-    
-    logger.info(f"delete customer request finished with response={result}")
-    return result
+        logger.info("Delete customer request finished with response=204")
+        return {"message": f"Customer id={customer_id} successfully deactivated."}
+
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))    

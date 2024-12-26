@@ -7,7 +7,7 @@ class CustomerStorage:
         self.db = db_conn
 
     def delete_customer(self, customer_id: str):
-        self.logger.info(f"[STORAGE]: Deleting customer whit id {customer_id}")
+        self.logger.info(f"Deleting customer whit id {customer_id}")
 
         try:
             with self.db.cursor() as cursor:
@@ -21,8 +21,7 @@ class CustomerStorage:
                 )
                 self.db.commit()
                 if cursor.rowcount == 0:
-                    self.logger.warning(f"[STORAGE]: Customer id={customer_id} not found or already inactive.")
-                    return None
+                    raise KeyError(f"Customer id={customer_id} not found or already inactive.")
                 return customer_id
             
         except Exception as ex:

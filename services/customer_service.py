@@ -7,15 +7,11 @@ class CustomerService:
         self.storage = CustomerStorage()
 
     def delete_customer(self, customer_id: str):
-        self.logger.info(f"[SERVICE]: Deleting customer with id={customer_id}")
+        self.logger.info(f"Deleting customer with id={customer_id}")
 
         try:
-            deleted_customer_id = self.storage.delete_customer(customer_id)
-            if deleted_customer_id is None:
-                self.logger.warning(f"[SERVICE]: No active customer found with id={customer_id}")
-                return None
-            return {"message": f"Customer id={customer_id} successfully deactivated."}
-        
+            self.storage.delete_customer(customer_id)
+
         except Exception as ex:
             self.logger.error(f"Error in service layer: {ex}")
             raise
