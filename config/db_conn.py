@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 import os
 from dotenv import load_dotenv
 
@@ -12,4 +13,4 @@ db_conn = psycopg2.connect(
     port=os.getenv("DATABASE_PORT"),
 )
 
-conn = db_conn
+db_conn.cursor_factory = psycopg2.extras.DictCursor
