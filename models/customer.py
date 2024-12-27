@@ -8,4 +8,4 @@ class Customer(BaseModel):
     name: str
     email: EmailStr
     created_at: datetime = Field(default_factory= datetime.now)
-    updated_at: datetime = Field(default=None)
+    updated_at: Optional[datetime] = Field(default=None)
