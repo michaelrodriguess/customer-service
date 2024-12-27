@@ -12,11 +12,13 @@ class CustomerStorage:
         self.logger.info("Getting an customer in DB")
         try:
             with self.db.cursor() as cursor:
-                cursor.execute("""
-                            SELECT id, name, email, created_at, updated_at
-                            FROM customers
-                            WHERE id = %s;
-                            """, (id))
+                cursor.execute(
+                    """
+                    SELECT id, name, email, created_at, updated_at
+                    FROM customers
+                    WHERE id = %s;
+                    """,
+                    (id,))
                 
                 result = cursor.fetchone()
 
@@ -33,7 +35,8 @@ class CustomerStorage:
         self.logger.info("Getting all customers in DB")
         try:
             with self.db.cursor() as cursor:
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT id, name, email, created_at, updated_at
                     FROM customers 
                     """)
