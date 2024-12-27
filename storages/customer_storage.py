@@ -22,8 +22,7 @@ class CustomerStorage:
                 self.db.commit()
                 if cursor.rowcount == 0:
                     raise KeyError(f"Customer id={customer_id} not found or already inactive.")
-                return customer_id
             
         except Exception as ex:
-            self.logger.error(f"Error in storage layer: {ex}")
+            self.db.rollback(f"Error in storage layer: {ex}")
             raise
