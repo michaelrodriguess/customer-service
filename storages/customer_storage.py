@@ -1,5 +1,6 @@
 import logging
 from config.db_conn import db_conn
+from psycopg2 import DatabaseError 
 
 class CustomerStorage:
     def __init__(self):
@@ -23,6 +24,6 @@ class CustomerStorage:
                 if cursor.rowcount == 0:
                     raise KeyError(f"Customer id={customer_id} not found or already inactive.")
             
-        except Exception as ex:
-            self.db.rollback(f"Error in storage layer: {ex}")
+        except DatabaseError as ex:
+            self.db.rollback(f"Failed to delete in DB: {ex}")
             raise

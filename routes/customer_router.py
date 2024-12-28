@@ -1,6 +1,7 @@
 import logging
 from fastapi import APIRouter, HTTPException, Response
 from services.customer_service import CustomerService
+from psycopg2 import DatabaseError
 
 logging.basicConfig(
     format="%(asctime)s - %(message)s",
@@ -21,4 +22,6 @@ def delete_customer(customer_id: str):
         return Response(status_code=204)
 
     except KeyError as e:
-        raise HTTPException(status_code=404, detail=str(e))    
+        raise HTTPException(status_code=404, detail=str(e))
+    except DatabaseError as e:
+        raise HTTPException(status_code=500, datail=str(e))
