@@ -23,7 +23,7 @@ class CustomerStorage:
                 result = cursor.fetchone()
 
                 if result == None:
-                    raise Exception(f"Customer not found with id {id}")
+                    raise ValueError(f"Customer not found with id {id}")
 
                 return Customer(**result)
 

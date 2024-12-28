@@ -15,7 +15,8 @@ def get_all_customers():
 
 @router.get("/customers/{id}", response_model=Customer)
 def get_customer_by_id(id: str):
-    customer = customer_service.get_customer_by_id(id)
-    if not customer:
-        raise HTTPException(status_code=404, detail="Customer not found")
-    return customer
+    try:
+        return customer_service.get_customer_by_id(id)
+    except ValueError as ex:
+        logger.warning(f"Customer not found: {ex}")
+        raise HTTPException(status_code=404, detail=str(ex))
