@@ -15,9 +15,9 @@ class CustomerStorage:
             with self.db.cursor() as cursor:
                 cursor.execute(
                     """
-                    SELECT id, name, email, created_at, updated_at
+                    SELECT id, name, email, created_at, updated_at, active
                     FROM customers
-                    WHERE id = %s;
+                    WHERE id = %s AND active = true;
                     """,
                     (id,))
                 
@@ -38,8 +38,9 @@ class CustomerStorage:
             with self.db.cursor() as cursor:
                 cursor.execute(
                     """
-                    SELECT id, name, email, created_at, updated_at
-                    FROM customers 
+                    SELECT id, name, email, created_at, updated_at, active
+                    FROM customers
+                    WHERE active = true;
                     """)
                 rows = cursor.fetchall()
 
