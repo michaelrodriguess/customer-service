@@ -23,5 +23,3 @@ def delete_customer(customer_id: str):
 
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except DatabaseError as e:
-        raise HTTPException(status_code=500, datail=str(e))

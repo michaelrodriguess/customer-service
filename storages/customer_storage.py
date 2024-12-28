@@ -25,5 +25,6 @@ class CustomerStorage:
                     raise KeyError(f"Customer id={customer_id} not found or already inactive.")
             
         except DatabaseError as ex:
-            self.db.rollback(f"Failed to delete in DB: {ex}")
+            self.db.rollback()
+            self.logger.error(f"Failed to delete in DB: {ex}")
             raise
