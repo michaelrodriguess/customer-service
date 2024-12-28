@@ -7,36 +7,19 @@ customer_service = Customer_service()
 CustomerRouter = APIRouter()
 
 
-@CustomerRouter.put("/customers/")
+@CustomerRouter.put("/customers/", response_model=Customer_update)
 def update_customer(customer_update: Customer):
     try:
-        updated_customer = customer_service.update_customer(customer_update)
-
-        return {
-            "message": "Customer updated successfully",
-            "customer": updated_customer,
-        }
+        return customer_service.update_customer(customer_update)
 
     except EntityNotFound as e:
         raise HTTPException(status_code=404, detail=e.message)
-    except Exception:
-        raise HTTPException(status_code=500, detail="an unexpected error ocurred.")
 
 
-@CustomerRouter.patch("/customers/")
+@CustomerRouter.patch("/customers/", response_model=Customer_update)
 def patch_customer(customer_update: Customer_update):
     try:
-        updated_customer = customer_service.patch_customer(customer_update)
-        return {
-            "customer": {
-                "id": updated_customer[0],
-                "name": updated_customer[1],
-                "email": updated_customer[2],
-                "updated_at": updated_customer[3],
-            },
-        }
+        return customer_service.patch_customer(customer_update)
+
     except EntityNotFound as e:
         raise HTTPException(status_code=404, detail=e.message)
-
-    except Exception:
-        raise HTTPException(status_code=500, detail="an unexpected error ocurred.")

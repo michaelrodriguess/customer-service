@@ -1,6 +1,7 @@
 from config.db_conn import conn
 from psycopg2 import sql, Error
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
+from exceptions.customer_exceptions import EntityNotFound
 
 
 class CustomerStorage:
@@ -8,9 +9,8 @@ class CustomerStorage:
         self.customers = []
         self.db = conn
 
-    def update_customer(self, customer_update) -> dict:
+    def update_customer(self, customer_update) -> tuple:
         try:
-            utc_minus_3 = timezone(timedelta(hours=-3))
             with self.db.cursor() as cursor:
                 query = sql.SQL(
                     """
@@ -25,7 +25,7 @@ class CustomerStorage:
                     (
                         customer_update.name,
                         customer_update.email,
-                        datetime.now(timezone.utc).astimezone(utc_minus_3),
+                        datetime.now(),
                         customer_update.id,
                     ),
                 )
@@ -44,7 +44,7 @@ class CustomerStorage:
             self.db.rollback()
             raise
 
-    def patch_customer(self, customer_update) -> dict:
+    def patch_customer(self, customer_update) -> tuple:
         try:
             with conn.cursor() as cursor:
                 update_data = {
@@ -71,9 +71,3 @@ class CustomerStorage:
         except (Error, ValueError):
             self.db.rollback()
             raise
-
-
-class EntityNotFound(Exception):
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(self.message)
