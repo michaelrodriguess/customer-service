@@ -1,20 +1,19 @@
-from config.customers_storage import CustomerStorage
-from models.customer import Customer, Customer_update
+from storages.customers_storage import CustomerStorage
 
 
 class Customer_service:
 
     def __init__(self):
-        self.config = CustomerStorage()
+        self.storage = CustomerStorage()
 
-    def update_customer(self, id: str, customer: Customer):
+    def update_customer(self, customer):
 
-        updated_customer = self.config.update_customer(id, customer)
+        updated_customer = self.storage.update_customer(customer)
 
         return updated_customer
 
-    def patch_customer(self, id: str, customer: Customer_update):
+    def patch_customer(self, customer):
 
-        updated_customer = self.config.patch_customer(id, customer)
+        updated_customer = self.storage.patch_customer(customer)
 
         return updated_customer

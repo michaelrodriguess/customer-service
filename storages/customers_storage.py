@@ -1,5 +1,4 @@
-from models.customer import Customer_update
-from .db_conn import conn
+from config.db_conn import conn
 from psycopg2 import sql, Error
 from datetime import datetime, timezone, timedelta
 
@@ -9,7 +8,7 @@ class CustomerStorage:
         self.customers = []
         self.db = conn
 
-    def update_customer(self, id: str, customer_update: Customer_update):
+    def update_customer(self, customer_update) -> dict:
         try:
             utc_minus_3 = timezone(timedelta(hours=-3))
             with self.db.cursor() as cursor:
@@ -27,57 +26,54 @@ class CustomerStorage:
                         customer_update.name,
                         customer_update.email,
                         datetime.now(timezone.utc).astimezone(utc_minus_3),
-                        id,
+                        customer_update.id,
                     ),
                 )
 
                 updated_customer = cursor.fetchone()
-                if updated_customer is None:
-                    raise ValueError(f"Customer with id {id} not found")
+
+                if not updated_customer:
+                    raise EntityNotFound(
+                        f"Customer with id {customer_update.id} not found"
+                    )
 
                 self.db.commit()
-                return {
-                    "msg": "Customer updated successfully",
-                    "customer": {
-                        "id": updated_customer[0],
-                        "name": updated_customer[1],
-                        "email": updated_customer[2],
-                        "updated_at": updated_customer[3],
-                    },
-                }
+                return updated_customer
+
         except (Error, ValueError):
             self.db.rollback()
             raise
 
-    def patch_customer(self, id: str, customer_update: Customer_update) -> dict:
+    def patch_customer(self, customer_update) -> dict:
         try:
             with conn.cursor() as cursor:
                 update_data = {
                     key: value
                     for key, value in customer_update.dict().items()
-                    if value is not None
+                    if value is not None and key != "id"
                 }
-                if not update_data:
-                    raise ValueError("body is empty")
-
                 set_string = ",".join([f"{key} = %s" for key in update_data])
 
                 query = sql.SQL(
                     "UPDATE customers SET {set_string} WHERE id =%s RETURNING id,name,email,updated_at"
                 ).format(set_string=sql.SQL(set_string))
-
-                cursor.execute(query, list(update_data.values()) + [id])
+                cursor.execute(query, list(update_data.values()) + [customer_update.id])
 
                 updated_customer = cursor.fetchone()
 
                 if not updated_customer:
-                    raise ValueError("Customer not found")
+                    raise EntityNotFound(
+                        f"Customer with id {customer_update.id} not found"
+                    )
 
                 self.db.commit()
-                return {
-                    "message": "Customer updated successfully",
-                    "customer": updated_customer,
-                }
+                return updated_customer
         except (Error, ValueError):
             self.db.rollback()
             raise
+
+
+class EntityNotFound(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
