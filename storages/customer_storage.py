@@ -2,6 +2,7 @@ import logging
 from models.customer import Customer
 from config.db_conn import db_conn
 from typing import List
+from psycopg2 import DatabaseError
 
 class CustomerStorage:
     def __init__(self):
@@ -27,7 +28,7 @@ class CustomerStorage:
 
                 return Customer(**result)
 
-        except Exception as ex:
+        except DatabaseError as ex:
             self.logger.error(f"Failed to get customer by id={id} in DB. Error: {ex}")
             raise
 
@@ -43,6 +44,6 @@ class CustomerStorage:
                 rows = cursor.fetchall()
 
                 return [Customer(**row) for row in rows]
-        except Exception as ex:
+        except DatabaseError as ex:
             self.logger.error(f"Failed to get all customers in DB. Error: {ex}")
             raise
