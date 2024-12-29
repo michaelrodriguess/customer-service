@@ -26,7 +26,7 @@ class CustomerStorage:
                 if result == None:
                     raise ValueError(f"Customer not found with id {id}")
 
-                return Customer(**result)
+                return self.map_customer_row_to_model(result)
 
         except DatabaseError as ex:
             self.logger.error(f"Failed to get customer by id={id} in DB. Error: {ex}")
@@ -44,7 +44,15 @@ class CustomerStorage:
                     """)
                 rows = cursor.fetchall()
 
-                return [Customer(**row) for row in rows]
+                return [self.map_customer_row_to_model(row) for row in rows]
         except DatabaseError as ex:
             self.logger.error(f"Failed to get all customers in DB. Error: {ex}")
-            raise
+            
+    def map_customer_row_to_model(self, row: List) -> Customer:
+        return customer(
+            id = row[0],
+            name = row[1],
+            email = row[2],
+            created_at = row[3],
+            updated_at = row[4]
+        )
