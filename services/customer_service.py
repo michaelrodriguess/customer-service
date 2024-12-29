@@ -9,6 +9,10 @@ class Customer_service:
         self.logger = logging.getLogger(__name__)
         self.storage = CustomerStorage()
 
+    def create_customer(self, customer: Customer):
+        self.logger.info(f"Creating customer with this data={customer}")
+        return self.storage.create_customer(customer)
+
     def update_customer(self, customer) -> Customer_update:
         self.logger.info("Starting the service to update customer")
         updated_customer = self.storage.update_customer(customer)

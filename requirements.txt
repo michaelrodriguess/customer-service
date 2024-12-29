@@ -7,4 +7,8 @@ psycopg2
 psycopg2-binary
 pydantic_settings
 python-dotenv
+<<<<<<< HEAD
 pytest
+=======
+PyYAML
+>>>>>>> 42a2624cb02e7ac407be58180d2bb29a03ffae2a
