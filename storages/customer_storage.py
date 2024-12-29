@@ -2,8 +2,7 @@ import logging
 from models.customer import Customer
 from config.db_conn import db_conn
 from typing import List
-from psycopg2 import DatabaseError
-
+from psycopg2 import DatabaseError, IntegrityError
 
 class CustomerStorage:
     def __init__(self):
@@ -49,6 +48,40 @@ class CustomerStorage:
         except DatabaseError as ex:
             self.logger.error(f"Failed to get all customers in DB. Error: {ex}")
             raise
+
+        
+    def create_customer(self, customer: Customer) -> Customer:
+        self.logger.info("Starting operation to insert customer into the database.")
+
+        try:            
+            with self.db.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO customers (id, name, email, created_at, active)
+                    VALUES (%s, %s, %s, NOW(), TRUE);
+                    """,
+                    (customer.id, customer.name, customer.email),
+                )
+                self.db.commit()
+                self.logger.info(f"Customer {customer.name} successfully inserted.")
+                return customer
+                  
+        except IntegrityError as integrity_error:
+            self.db.rollback()
+            self.logger.error(
+                f"Integrity error while inserting customer. Customer data: {customer}." 
+                f"Details: {integrity_error}"
+            )
+            raise
+        
+        except DatabaseError as db_error:
+            self.db.rollback()
+            self.logger.error(
+                f"Database error while inserting customer. Customer data: {customer}. "
+                f"Details: {db_error}"
+            )
+            raise
+
 
     def delete_customer(self, customer_id: str):
         self.logger.info(f"Deleting customer whit id {customer_id}")

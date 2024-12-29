@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from models.customer import Customer
 import logging
 from services.customer_service import CustomerService
@@ -34,7 +34,15 @@ def get_customer_by_id(id: str):
         logger.warning(f"Customer not found: {ex}")
         raise HTTPException(status_code=404, detail=ex.message)
 
-@customer_router.delete("/customers/{customer_id}")
+@router.post("/customers", response_model=Customer)
+def create_customer(customer_data: Customer):
+    logger.info(f"Creating customer with this data={customer_data}")
+    created_customer = customer_service.create_customer(customer_data)
+    
+    logger.info(f"create customer request finished with response={create_customer}")
+    return created_customer
+
+@router.delete("/customers/{customer_id}")
 def delete_customer(customer_id: str):
     try:
         logger.info(f"Deleting customer with id={customer_id}")
