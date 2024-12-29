@@ -16,12 +16,20 @@ customer_service = CustomerService()
 
 @router.get("/customers", response_model=List[Customer])
 def get_all_customers():
-    return customer_service.get_all_customers()
+    logger.info(f"Getting all customers")
+    get_customer = customer_service.get_all_customers()
+
+    logger.info(f"Get all data of customers request finished with response={get_customer}")
+    return get_customer
 
 @router.get("/customers/{id}", response_model=Customer)
 def get_customer_by_id(id: str):
     try:
-        return customer_service.get_customer_by_id(id)
+        logger.info(f"Gettin customer with id={id}")
+        get_customer = customer_service.get_customer_by_id(id)
+
+        logger.info(f"Get customer by id request finished with response={get_customer}")
+        return get_customer
     except ValueError as ex:
         logger.warning(f"Customer not found: {ex}")
         raise HTTPException(status_code=404, detail=ex.message)
