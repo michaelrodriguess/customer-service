@@ -15,7 +15,8 @@ class Customer(BaseModel):
 class Customer_update(BaseModel):
     id: str
     name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
+    active: Optional[bool]
     updated_at: datetime = Field(default_factory=datetime.now)
 
     @root_validator(pre=True)

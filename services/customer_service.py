@@ -1,33 +1,24 @@
-from storages.customers_storage import CustomerStorage
+from storages.customer_storage import CustomerStorage
 from models.customer_model import Customer_update
+import logging
 
 
 class Customer_service:
 
     def __init__(self):
+        self.logger = logging.getLogger(__name__)
         self.storage = CustomerStorage()
 
     def update_customer(self, customer) -> Customer_update:
-
+        self.logger.info(f"Starting the service to update customer")
         updated_customer = self.storage.update_customer(customer)
-
-        updated_customer_dict = {
-            "id": updated_customer[0],
-            "name": updated_customer[1],
-            "email": updated_customer[2],
-            "updated_at": updated_customer[3],
-        }
-        return Customer_update(**updated_customer_dict)
+        return updated_customer
 
     def patch_customer(self, customer) -> Customer_update:
-
+        self.logger.info(f"Starting the service to update customer")
         updated_customer = self.storage.patch_customer(customer)
+        return updated_customer
 
-        updated_customer_dict = {
-            "id": updated_customer[0],
-            "name": updated_customer[1],
-            "email": updated_customer[2],
-            "updated_at": updated_customer[3],
-        }
-
-        return Customer_update(**updated_customer_dict)
+    def delete_customer(self, customer_id: str):
+        self.logger.info(f"Deleting customer with id={customer_id}")
+        self.storage.delete_customer(customer_id)
