@@ -11,20 +11,15 @@ class Customer(BaseModel):
     )
     name: str = Field(..., description="Nome do cliente.")
     email: EmailStr = Field(..., description="Endereço de email válido do cliente.")
-    created_at: datetime = Field(
-        default_factory=datetime.now, description="Data de criação do cliente."
-    )
-    updated_at: Optional[datetime] = Field(
-        default=None, description="Data de atualização do cliente."
-    )
     active: bool = Field(
         default=True, description="Status do cliente (ativo ou inativo)."
     )
-
-
-from pydantic import BaseModel, EmailStr, Field
-from datetime import datetime
-from typing import Optional
+    created_at: datetime = Field(
+        default_factory=datetime.now, description="Data de criação do cliente."
+    )
+    updated_at: datetime = Field(
+        default=None, description="Data de atualização do cliente."
+    )
 
 
 class Customer_update(BaseModel):
@@ -35,7 +30,8 @@ class Customer_update(BaseModel):
     )
     active: Optional[bool] = Field(None, description="Status do cliente (opcional).")
     updated_at: datetime = Field(
-        default_factory=datetime.now, description="Data de atualização do cliente."
+        default_factory=datetime.now,
+        description="Data de atualização do cliente (opcional).",
     )
 
     @root_validator(pre=True)

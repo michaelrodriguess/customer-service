@@ -122,7 +122,7 @@ class CustomerStorage:
             with self.db.cursor() as cursor:
                 update_data = {
                     key: value
-                    for key, value in customer_update.dict(exclude_unset=True).items()
+                    for key, value in customer_update.dict().items()
                     if value is not None and key != "id"
                 }
                 set_string = ",".join([f"{key} = %s" for key in update_data])
