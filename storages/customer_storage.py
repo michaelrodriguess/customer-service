@@ -16,8 +16,8 @@ class CustomerStorage:
             with self.db.cursor() as cursor:
                 cursor.execute(
                     """
-                    INSERT INTO customers (id, name, email, created_at)
-                    VALUES (%s, %s, %s, NOW());
+                    INSERT INTO customers (id, name, email, created_at, active)
+                    VALUES (%s, %s, %s, NOW(), TRUE);
                     """,
                     (customer.id, customer.name, customer.email),
                 )
@@ -28,7 +28,8 @@ class CustomerStorage:
         except IntegrityError as integrity_error:
             self.db.rollback()
             self.logger.error(
-                f"Integrity error while inserting customer. Customer data: {customer}. Details: {integrity_error}"
+                f"Integrity error while inserting customer. Customer data: {customer}." 
+                f"Details: {integrity_error}"
             )
             raise
         

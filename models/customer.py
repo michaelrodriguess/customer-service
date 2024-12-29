@@ -9,3 +9,4 @@ class Customer(BaseModel):
     email: EmailStr
     created_at: datetime = Field(default_factory= datetime.now)
     updated_at: datetime = Field(default=None)
+    active: bool = Field(default=True)
