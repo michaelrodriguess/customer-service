@@ -48,6 +48,7 @@ class CustomerStorage:
                 return [self.map_customer_row_to_model(row) for row in rows]
         except DatabaseError as ex:
             self.logger.error(f"Failed to get all customers in DB. Error: {ex}")
+            raise
 
     def delete_customer(self, customer_id: str):
         self.logger.info(f"Deleting customer whit id {customer_id}")
