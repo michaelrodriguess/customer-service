@@ -4,7 +4,7 @@ from storages.customer_storage import CustomerStorage
 from typing import List
 
 class CustomerService:
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.storage = CustomerStorage()
@@ -16,3 +16,7 @@ class CustomerService:
     def get_all_customers(self) -> List[Customer]:
         self.logger.info(f"Getting all customers...")
         return self.storage.get_all_customers()
+
+    def delete_customer(self, customer_id: str):
+        self.logger.info(f"Deleting customer with id={customer_id}")
+        self.storage.delete_customer(customer_id)

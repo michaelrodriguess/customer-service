@@ -4,6 +4,7 @@ from config.db_conn import db_conn
 from typing import List
 from psycopg2 import DatabaseError
 
+
 class CustomerStorage:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -47,6 +48,27 @@ class CustomerStorage:
                 return [self.map_customer_row_to_model(row) for row in rows]
         except DatabaseError as ex:
             self.logger.error(f"Failed to get all customers in DB. Error: {ex}")
+
+    def delete_customer(self, customer_id: str):
+        self.logger.info(f"Deleting customer whit id {customer_id}")
+        try:
+            with self.db.cursor() as cursor:
+                cursor.execute(
+                    """
+                    UPDATE customers
+                    SET active = FALSE, updated_at = NOW()
+                    WHERE id = %s AND active = TRUE;
+                    """,
+                    (customer_id,)
+                )
+                self.db.commit()
+                if cursor.rowcount == 0:
+                    raise KeyError(f"Customer id={customer_id} not found or already inactive.")
+            
+        except DatabaseError as ex:
+            self.db.rollback()
+            self.logger.error(f"Failed to delete in DB: {ex}")
+            raise
             
     def map_customer_row_to_model(self, row: List) -> Customer:
         return customer(
