@@ -13,7 +13,7 @@ customer_service = CustomerService()
 @router.get("/customers", response_model=List[Customer])
 def get_all_customers():
     try:
-        return customer_service.get_all_customers() 
+        return customer_service.get_all_customers()
     except DatabaseError as ex:
         logger.warning(f"Failed to get Customer: {ex}")
         raise HTTPException(status_code=500, detail=str(ex))
