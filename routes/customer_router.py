@@ -1,18 +1,21 @@
 import logging
 from fastapi import APIRouter, HTTPException, Response
+from models.customer import Customer
 from services.customer_service import CustomerService
-from psycopg2 import DatabaseError
 
-logging.basicConfig(
-    format="%(asctime)s - %(message)s",
-    level=logging.INFO
-)
-
-customer_router = APIRouter()
+router = APIRouter()
 logger = logging.getLogger(__name__)
 customer_service = CustomerService()
 
-@customer_router.delete("/customers/{customer_id}")
+@router.post("/customers", response_model=Customer)
+def create_customer(customer_data: Customer):
+    logger.info(f"Creating customer with this data={customer_data}")
+    created_customer = customer_service.create_customer(customer_data)
+    
+    logger.info(f"create customer request finished with response={create_customer}")
+    return created_customer
+
+@router.delete("/customers/{customer_id}")
 def delete_customer(customer_id: str):
     try:
         logger.info(f"Deleting customer with id={customer_id}")
@@ -23,3 +26,4 @@ def delete_customer(customer_id: str):
 
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
