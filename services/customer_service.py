@@ -1,5 +1,5 @@
 from storages.customer_storage import CustomerStorage
-from models.customer_model import Customer_update
+from models.customer_model import Customer_update, Customer
 import logging
 
 
@@ -10,12 +10,12 @@ class Customer_service:
         self.storage = CustomerStorage()
 
     def update_customer(self, customer) -> Customer_update:
-        self.logger.info(f"Starting the service to update customer")
+        self.logger.info("Starting the service to update customer")
         updated_customer = self.storage.update_customer(customer)
         return updated_customer
 
     def patch_customer(self, customer) -> Customer_update:
-        self.logger.info(f"Starting the service to update customer")
+        self.logger.info("Starting the service to update customer")
         updated_customer = self.storage.patch_customer(customer)
         return updated_customer
 

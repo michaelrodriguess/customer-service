@@ -37,7 +37,7 @@ class CustomerStorage:
 
     def update_customer(self, customer_update) -> Customer_update:
         self.logger.info(
-            f"Updating customer: {customer_update.name}, with id: {customer_update.id}"
+            f" Full updating customer: {customer_update.name}, with id: {customer_update.id}"
         )
         try:
             with self.db.cursor() as cursor:
@@ -66,36 +66,29 @@ class CustomerStorage:
                     )
 
                 self.db.commit()
-
-                updated_customer_dict = {
-                    "id": updated_customer[0],
-                    "name": updated_customer[1],
-                    "email": updated_customer[2],
-                    "active": updated_customer[3],
-                    "updated_at": updated_customer[4],
-                }
-                return Customer_update(**updated_customer_dict)
+                self.logger.error(f"Customer {customer_update.name} updated in DB")
+                return self.customerTransform(updated_customer)
 
         except DatabaseError as ex:
             self.db.rollback()
-            self.logger.error(f"Failed to update in DB: {ex}")
+            self.logger.error("Failed to update in DB: {ex}")
             raise
 
     def patch_customer(self, customer_update) -> Customer_update:
         self.logger.info(
-            f"Updating customer: {customer_update.name}, with id: {customer_update.id}"
+            f"Partial updating customer: {customer_update.name}, with id: {customer_update.id}"
         )
         try:
             with self.db.cursor() as cursor:
                 update_data = {
                     key: value
-                    for key, value in customer_update.dict().items()
+                    for key, value in customer_update.dict(exclude_unset=True).items()
                     if value is not None and key != "id"
                 }
                 set_string = ",".join([f"{key} = %s" for key in update_data])
 
                 query = sql.SQL(
-                    "UPDATE customers SET {set_string} WHERE id =%s RETURNING id,name,email,active,updated_at"
+                    "UPDATE customers SET {set_string} WHERE id =%s RETURNING id, name, email, active, updated_at"
                 ).format(set_string=sql.SQL(set_string))
                 cursor.execute(query, list(update_data.values()) + [customer_update.id])
 
@@ -107,17 +100,19 @@ class CustomerStorage:
                     )
 
                 self.db.commit()
-
-                updated_customer_dict = {
-                    "id": updated_customer[0],
-                    "name": updated_customer[1],
-                    "email": updated_customer[2],
-                    "active": updated_customer[3],
-                    "updated_at": updated_customer[4],
-                }
-                return Customer_update(**updated_customer_dict)
+                self.logger.error(f"Customer {customer_update.name} updated in DB")
+                return self.customerTransform(updated_customer)
 
         except DatabaseError as ex:
             self.db.rollback()
             self.logger.error(f"Failed to update in DB: {ex}")
             raise
+
+    def customerTransform(self, customerTuple: tuple) -> Customer_update:
+        return Customer_update(
+            id=customerTuple[0],
+            name=customerTuple[1],
+            email=customerTuple[2],
+            active=customerTuple[3],
+            updated_at=customerTuple[4],
+        )
