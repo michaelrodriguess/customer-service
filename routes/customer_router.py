@@ -1,13 +1,37 @@
-import logging
 from fastapi import APIRouter, HTTPException, Response
+import logging
+from typing import List
 from services.customer_service import Customer_service
 from models.customer_model import Customer, Customer_update
 from exceptions.customer_exceptions import EntityNotFound
 
-
 router = APIRouter()
 logger = logging.getLogger(__name__)
 customer_service = Customer_service()
+
+
+@router.get("/customers", response_model=List[Customer])
+def get_all_customers():
+    logger.info(f"Getting all customers")
+    get_customer = customer_service.get_all_customers()
+
+    logger.info(
+        f"Get all data of customers request finished with response={get_customer}"
+    )
+    return get_customer
+
+
+@router.get("/customers/{id}", response_model=Customer)
+def get_customer_by_id(id: str):
+    try:
+        logger.info(f"Gettin customer with id={id}")
+        get_customer = customer_service.get_customer_by_id(id)
+
+        logger.info(f"Get customer by id request finished with response={get_customer}")
+        return get_customer
+    except ValueError as ex:
+        logger.warning(f"Customer not found: {ex}")
+        raise HTTPException(status_code=404, detail=ex.message)
 
 
 @router.post("/customers", response_model=Customer)
