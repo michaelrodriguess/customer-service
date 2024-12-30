@@ -5,11 +5,6 @@ from services.customer_service import CustomerService
 from typing import List
 from psycopg2 import DatabaseError
 
-logging.basicConfig(
-    format="%(asctime)s - %(message)s",
-    level=logging.INFO
-)
-
 router = APIRouter()
 logger = logging.getLogger(__name__)
 customer_service = CustomerService()
