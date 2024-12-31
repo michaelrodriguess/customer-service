@@ -75,7 +75,7 @@ def update_customer(customer_update: Customer, service: ServiceDep):
         raise HTTPException(status_code=404, detail=e.message)
 
 
-@router.patch("/customers/", response_model=Customer_update)
+@router.patch("/customers", response_model=Customer_update)
 def patch_customer(customer_update: Customer_update, service: ServiceDep):
     logger.info(f"Starting the process to partial update customer {customer_update}")
     try:
