@@ -61,7 +61,7 @@ def delete_customer(customer_id: str, service: ServiceDep):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.put("/customers/", response_model=Customer_update)
+@router.put("/customers", response_model=Customer_update)
 def update_customer(customer_update: Customer, service: ServiceDep):
     logger.info(f"Starting the process to full update customer {customer_update}")
     try:
