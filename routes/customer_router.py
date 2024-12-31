@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, Depends
+from fastapi import APIRouter, HTTPException, Response, Depends, Request
 import logging
 from typing import Annotated, List
 from configs.db_conn import get_database_connection
@@ -10,9 +10,8 @@ from exceptions.customer_exceptions import EntityNotFound
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-def get_customer_service() -> CustomerService:
-    storage = CustomerStorage(get_database_connection())
-    return CustomerService(storage)
+def get_customer_service(request: Request):
+    return request.state.customer_service
 
 ServiceDep = Annotated[CustomerService, Depends(get_customer_service)]
 
