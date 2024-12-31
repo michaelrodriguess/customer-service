@@ -19,10 +19,7 @@ async def lifespan(app: FastAPI):
     
 app = FastAPI(lifespan=lifespan, title="Customer Service",)
 
-app.include_router(
-    router,
-    dependencies=[Depends(get_customer_service)]
-)
+app.include_router(router)
 
 @app.get("/health")
 def health_check():
