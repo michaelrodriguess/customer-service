@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, Depends
 import logging
 from typing import Annotated, List
-from config.db_conn import get_database_connection
+from configs.db_conn import get_database_connection
 from services.customer_service import Customer_service
 from storages.customer_storage import CustomerStorage
 from models.customer_model import Customer, Customer_update
