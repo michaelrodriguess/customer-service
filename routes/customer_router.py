@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, Depends
 import logging
 from typing import Annotated, List
 from configs.db_conn import get_database_connection
-from services.customer_service import Customer_service
+from services.customer_service import CustomerService
 from storages.customer_storage import CustomerStorage
 from models.customer_model import Customer, Customer_update
 from exceptions.customer_exceptions import EntityNotFound
@@ -10,11 +10,11 @@ from exceptions.customer_exceptions import EntityNotFound
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-def get_customer_service() -> Customer_service:
+def get_customer_service() -> CustomerService:
     storage = CustomerStorage(get_database_connection())
-    return Customer_service(storage)
+    return CustomerService(storage)
 
-ServiceDep = Annotated[Customer_service, Depends(get_customer_service)]
+ServiceDep = Annotated[CustomerService, Depends(get_customer_service)]
 
 @router.get("/customers", response_model=List[Customer])
 def get_all_customers(service: ServiceDep):

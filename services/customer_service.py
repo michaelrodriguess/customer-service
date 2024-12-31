@@ -5,7 +5,7 @@ from models.customer_model import Customer_update, Customer
 import logging
 
 
-class Customer_service:
+class CustomerService:
 
     def __init__(self, storage: CustomerStorage):
         self.logger = logging.getLogger(__name__)
