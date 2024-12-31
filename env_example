@@ -1,5 +1,0 @@
-DATABASE_HOST= "customer-database"
-DATABASE_PORT = "5432"
-DATABASE_NAME= "mydb"
-DATABASE_USER= "postgres"
-DATABASE_PASSWORD = "password"
