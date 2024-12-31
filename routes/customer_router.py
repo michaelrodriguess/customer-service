@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, Depends
 import logging
 from typing import Annotated, List
+from config.db_conn import get_database_connection
 from services.customer_service import Customer_service
 from storages.customer_storage import CustomerStorage
 from models.customer_model import Customer, Customer_update
@@ -10,7 +11,7 @@ customer_router = APIRouter()
 logger = logging.getLogger(__name__)
 
 def get_customer_service() -> Customer_service:
-    storage = CustomerStorage()
+    storage = CustomerStorage(get_database_connection())
     return Customer_service(storage)
 
 ServiceDep = Annotated[Customer_service, Depends(get_customer_service)]

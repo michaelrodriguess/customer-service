@@ -1,14 +1,14 @@
 import logging
-from config.db_conn import db_connection
 from typing import List
 from psycopg2 import DatabaseError, IntegrityError, sql
+from psycopg2._psycopg import connection
 from datetime import datetime
 from exceptions.customer_exceptions import EntityNotFound
 from models.customer_model import Customer_update, Customer
 
 
 class CustomerStorage:
-    def __init__(self):
+    def __init__(self, db_connection: connection):
         self.logger = logging.getLogger(__name__)
         self.db = db_connection
 
