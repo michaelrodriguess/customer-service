@@ -110,7 +110,7 @@ class CustomerStorage:
             raise
 
     def map_customer_row_to_model(self, row: List) -> Customer:
-        return customer(
+        return Customer(
             id=row[0], name=row[1], email=row[2], created_at=row[3], updated_at=row[4]
         )
 
