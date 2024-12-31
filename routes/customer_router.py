@@ -7,7 +7,7 @@ from storages.customer_storage import CustomerStorage
 from models.customer_model import Customer, Customer_update
 from exceptions.customer_exceptions import EntityNotFound
 
-customer_router = APIRouter()
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 def get_customer_service() -> Customer_service:
@@ -16,7 +16,7 @@ def get_customer_service() -> Customer_service:
 
 ServiceDep = Annotated[Customer_service, Depends(get_customer_service)]
 
-@customer_router.get("/customers", response_model=List[Customer])
+@router.get("/customers", response_model=List[Customer])
 def get_all_customers(service: ServiceDep):
     logger.info(f"Getting all customers")
     get_customer = service.get_all_customers()
@@ -27,7 +27,7 @@ def get_all_customers(service: ServiceDep):
     return get_customer
 
 
-@customer_router.get("/customers/{id}", response_model=Customer)
+@router.get("/customers/{id}", response_model=Customer)
 def get_customer_by_id(id: str, service: ServiceDep):
     try:
         logger.info(f"Gettin customer with id={id}")
@@ -40,7 +40,7 @@ def get_customer_by_id(id: str, service: ServiceDep):
         raise HTTPException(status_code=404, detail=ex.message)
 
 
-@customer_router.post("/customers", response_model=Customer)
+@router.post("/customers", response_model=Customer)
 def create_customer(customer_data: Customer, service: ServiceDep):
     logger.info(f"Creating customer with this data={customer_data}")
     created_customer = service.create_customer(customer_data)
@@ -49,7 +49,7 @@ def create_customer(customer_data: Customer, service: ServiceDep):
     return created_customer
 
 
-@customer_router.delete("/customers/{customer_id}")
+@router.delete("/customers/{customer_id}")
 def delete_customer(customer_id: str, service: ServiceDep):
     try:
         logger.info(f"Deleting customer with id={customer_id}")
@@ -62,7 +62,7 @@ def delete_customer(customer_id: str, service: ServiceDep):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@customer_router.put("/customers/", response_model=Customer_update)
+@router.put("/customers/", response_model=Customer_update)
 def update_customer(customer_update: Customer, service: ServiceDep):
     logger.info(f"Starting the process to full update customer {customer_update}")
     try:
@@ -76,7 +76,7 @@ def update_customer(customer_update: Customer, service: ServiceDep):
         raise HTTPException(status_code=404, detail=e.message)
 
 
-@customer_router.patch("/customers/", response_model=Customer_update)
+@router.patch("/customers/", response_model=Customer_update)
 def patch_customer(customer_update: Customer_update, service: ServiceDep):
     logger.info(f"Starting the process to partial update customer {customer_update}")
     try:
