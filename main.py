@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
-from routes.customer_router import get_customer_service
 from configs.db_conn import get_database_connection
 from services.customer_service import CustomerService
 from storages.customer_storage import CustomerStorage
