@@ -1,5 +1,5 @@
 import logging
-from config.db_conn import db_conn
+from config.db_conn import conn
 from typing import List
 from psycopg2 import DatabaseError, IntegrityError, sql
 from datetime import datetime
@@ -10,7 +10,7 @@ from models.customer_model import Customer_update, Customer
 class CustomerStorage:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.db = db_conn
+        self.db = conn
 
     def get_customer_by_id(self, id: str) -> Customer:
         self.logger.info("Getting an customer in DB")
@@ -110,7 +110,7 @@ class CustomerStorage:
             raise
 
     def map_customer_row_to_model(self, row: List) -> Customer:
-        return customer(
+        return Customer(
             id=row[0], name=row[1], email=row[2], created_at=row[3], updated_at=row[4]
         )
 
