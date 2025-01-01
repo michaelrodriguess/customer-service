@@ -20,4 +20,4 @@ COPY . /app/
 
 EXPOSE 6789
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "6789", "--reload", "--log-config", "config/log_config.yaml" ]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "6789", "--reload", "--log-config", "configs/log_config.yaml" ]
