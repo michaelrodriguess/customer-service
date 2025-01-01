@@ -5,11 +5,11 @@ from models.customer_model import Customer_update, Customer
 import logging
 
 
-class Customer_service:
+class CustomerService:
 
-    def __init__(self):
+    def __init__(self, storage: CustomerStorage):
         self.logger = logging.getLogger(__name__)
-        self.storage = CustomerStorage()
+        self.storage = storage
 
     def get_customer_by_id(self, id: str) -> Customer:
         self.logger.info(f"Getting customer by id...")

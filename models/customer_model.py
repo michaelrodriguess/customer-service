@@ -17,7 +17,7 @@ class Customer(BaseModel):
     created_at: datetime = Field(
         default_factory=datetime.now, description="Data de criação do cliente."
     )
-    updated_at: datetime = Field(
+    updated_at: datetime | None = Field(
         default=None, description="Data de atualização do cliente."
     )
 
