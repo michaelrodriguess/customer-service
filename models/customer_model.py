@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, root_validator
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
 from typing import Optional
 import ulid
@@ -34,7 +34,7 @@ class Customer_update(BaseModel):
         description="Data de atualização do cliente (opcional).",
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode='before')
     def check_at_least_one_field(cls, values):
         required_keys = [
             key for key, value in values.items() if key != "id" and value is not None
