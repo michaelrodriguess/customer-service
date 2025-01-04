@@ -87,7 +87,7 @@ class CustomerStorage:
             raise
 
     def delete_customer(self, customer_id: str):
-        self.logger.info(f"Deleting customer whit id {customer_id}")
+        self.logger.info(f"Deleting customer with id {customer_id}")
         try:
             with self.db.cursor() as cursor:
                 cursor.execute(
