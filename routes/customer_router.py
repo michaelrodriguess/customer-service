@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 import logging
 from typing import Annotated, List
 from configs.db_conn import get_database_connection
@@ -36,7 +36,10 @@ def get_customer_by_id(id: str, service: ServiceDep):
         return get_customer
     except ValueError as ex:
         logger.warning(f"Customer not found: {ex}")
-        raise HTTPException(status_code=404, detail=ex.message)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Product not found with id {id}",
+        ) from ex
 
 
 @router.post("/customers", response_model=Customer)
