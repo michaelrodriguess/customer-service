@@ -24,7 +24,7 @@ def test_get_customer_by_id_successfully(customer, mock_storage, service):
     assert result == customer
     mock_storage.get_customer_by_id.assert_called_once_with("01F8MECHZX3TBDSZ7XD96VR2H5")
 
-def test_retrieve_customer_by_id_handles_value_error(mock_storage, service):
+def test_get_customer_by_id_handles_value_error(mock_storage, service):
     mock_storage.get_customer_by_id.side_effect = ValueError()
 
     with pytest.raises(ValueError):
@@ -41,7 +41,7 @@ def test_get_all_customers_successfully(customer, mock_storage, service):
     mock_storage.get_all_customers.assert_called_once()
 
 
-def test_retrieve_all_customers_handles_database_error(mock_storage, service):
+def test_get_all_customers_handles_database_error(mock_storage, service):
     mock_storage.get_all_customers.side_effect = DatabaseError()
 
     with pytest.raises(DatabaseError):
