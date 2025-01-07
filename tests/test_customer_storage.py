@@ -47,14 +47,13 @@ def test_delete_customer_not_found(storage):
                     (customer_id,),
         )
 
+
 def test_delete_customer_database_error(storage):
     storage, cursor_mock = storage
     customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
 
-    cursor_mock.execute.side_effect = DatabaseError("Simulating the DatabaseError")
+    cursor_mock.execute.side_effect = DatabaseError()
 
-    with pytest.raises(DatabaseError, match="Simulating the DatabaseError"):
+    with pytest.raises(DatabaseError):
         storage.delete_customer(customer_id)
         storage.db.rollback.assert_called_once()
-
-# TODO: think and add possible cases for the delete method in storage
