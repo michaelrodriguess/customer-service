@@ -201,15 +201,15 @@ class CustomerStorage:
             id=row[0], name=row[1], email=row[2], created_at=row[3], updated_at=row[4]
         )
 
-    def update_customer(self, customer_update: CustomerUpdate) -> CustomerUpdate:
+    def update_customer(self, customer_update: Customer) -> Customer:
         """
         Atualiza um cliente no banco de dados com os novos dados fornecidos.
 
         Args:
-            customer_update (CustomerUpdate): Os dados atualizados do cliente.
+            customer_update (Customer): Os dados atualizados do cliente.
 
         Returns:
-            CustomerUpdate: O cliente atualizado.
+            Customer: O cliente atualizado.
 
         Raises:
             EntityNotFound: Caso o cliente não seja encontrado.
@@ -250,7 +250,8 @@ class CustomerStorage:
 
                 self.db.commit()
                 self.logger.info("Customer %s updated in DB", customer_update.name)
-                return self.customer_transform(updated_customer)
+
+                return self.customer_transform_customer(updated_customer)
 
         except IntegrityError as integrity_error:
             self.db.rollback()
@@ -313,7 +314,7 @@ class CustomerStorage:
 
                 self.db.commit()
                 self.logger.info("Customer %s updated in DB", customer_update.name)
-                return self.customer_transform(updated_customer)
+                return self.customer_transform_updated_customer(updated_customer)
 
         except IntegrityError as integrity_error:
             self.db.rollback()
@@ -329,7 +330,28 @@ class CustomerStorage:
             self.logger.error("Failed to update customer in DB: %s", ex)
             raise
 
-    def customer_transform(self, customer_tuple: tuple) -> CustomerUpdate:
+    def customer_transform_customer(self, customer_tuple: tuple) -> Customer:
+        """
+        Converte os dados de um cliente em tupla para o modelo CustomerUpdate.
+
+        Args:
+            customer_tuple (tuple): A tupla contendo os dados do cliente.
+
+        Returns:
+            CustomerUpdate: O modelo de cliente transformado.
+        """
+        return Customer(
+            id=customer_tuple[0],
+            name=customer_tuple[1],
+            email=customer_tuple[2],
+            active=customer_tuple[3],
+            created_at=customer_tuple[4],
+            updated_at=customer_tuple[5],
+        )
+
+    def customer_transform_updated_customer(
+        self, customer_tuple: tuple
+    ) -> CustomerUpdate:
         """
         Converte os dados de um cliente em tupla para o modelo CustomerUpdate.
 

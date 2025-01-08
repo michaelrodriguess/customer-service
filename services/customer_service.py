@@ -59,7 +59,7 @@ class CustomerService:
         self.logger.info("Creating customer with this data=%s", customer)
         return self.storage.create_customer(customer)
 
-    def update_customer(self, customer: Customer) -> CustomerUpdate:
+    def update_customer(self, customer: Customer) -> Customer:
         """
         Atualiza completamente os dados de um cliente.
 
