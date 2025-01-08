@@ -34,13 +34,9 @@ ServiceDep = Annotated[CustomerService, Depends(get_customer_service)]
 @router.get("/customers", response_model=List[Customer])
 def get_all_customers(service: ServiceDep):
     """
-    Retorna todos os clientes cadastrados.
-
-    Args:
-        service (CustomerService): Serviço de clientes.
-
-    Returns:
-        List[Customer]: Lista de todos os clientes.
+    This endpoint handles HTTP GET requests to fetch a list of all customers. 
+    It utilizes the `service` dependency to retrieve customer data and returns 
+    the results as a JSON response.
     """
     logger.info("Getting all customers")
     customers = service.get_all_customers()
@@ -53,17 +49,9 @@ def get_all_customers(service: ServiceDep):
 @router.get("/customers/{customer_id}", response_model=Customer)
 def get_customer_by_id(customer_id: str, service: ServiceDep):
     """
-    Retorna os detalhes de um cliente pelo ID.
-
-    Args:
-        customer_id (str): ID do cliente.
-        service (CustomerService): Serviço de clientes.
-
-    Returns:
-        Customer: Cliente encontrado.
-
-    Raises:
-        HTTPException: Se o cliente não for encontrado.
+    This endpoint handles HTTP GET requests to fetch a customer based on the provided ID.
+    It uses the `service` dependency to perform the lookup and returns the customer 
+    data as a JSON response. If no customer is found, it raises an HTTP 404 error
     """
     try:
         logger.info("Getting customer with id=%s", customer_id)

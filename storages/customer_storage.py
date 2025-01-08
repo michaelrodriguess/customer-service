@@ -44,17 +44,9 @@ class CustomerStorage:
 
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        Busca um cliente no banco de dados pelo ID.
-
-        Args:
-            id_customer (str): O ID do cliente a ser buscado.
-
-        Returns:
-            Customer: Uma instância do modelo de cliente contendo os dados encontrados.
-
-        Raises:
-            DatabaseError: Caso ocorra um erro ao acessar o banco de dados.
-            ValueError: Caso o cliente não seja encontrado.
+        This method fetches a customer record from the `customers` table based on the provided 
+        customer ID. Only active customers (`active = true`) are considered. If no matching record 
+        is found, a ValueError is raised.
         """
         self.logger.info("Getting a customer by ID in DB")
         try:
@@ -83,13 +75,8 @@ class CustomerStorage:
 
     def get_all_customers(self) -> List[Customer]:
         """
-        Obtém todos os clientes ativos do banco de dados.
-
-        Returns:
-            List[Customer]: Lista de instâncias de clientes.
-
-        Raises:
-            DatabaseError: Caso ocorra um erro ao acessar o banco de dados.
+        This method queries the `customers` table to fetch all customer records where the 
+        `active` status is set to `true`. The retrieved rows are mapped into `Customer` objects.
         """
         self.logger.info("Getting all customers in DB")
         try:

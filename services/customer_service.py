@@ -25,23 +25,17 @@ class CustomerService:
 
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        Retorna os detalhes de um cliente específico pelo ID.
-
-        Args:
-            id_customer (str): Identificador único do cliente.
-
-        Returns:
-            Customer: Dados do cliente encontrado.
+        This method delegates the retrieval of a customer to the `storage` layer, 
+        which fetches the customer record from the database based on the provided ID.
         """
         self.logger.info("Getting customer by id...")
         return self.storage.get_customer_by_id(id_customer)
 
     def get_all_customers(self) -> List[Customer]:
         """
-        Retorna a lista de todos os clientes cadastrados.
-
-        Returns:
-            List[Customer]: Lista de clientes.
+        This method delegates the retrieval of all customer records to the `storage` layer, 
+        which handles the database operations. It returns a list of `Customer` objects 
+        representing all customers in the system.
         """
         self.logger.info("Getting all customers...")
         return self.storage.get_all_customers()
