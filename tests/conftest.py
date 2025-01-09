@@ -14,10 +14,10 @@ def customer_create_row():
     Fixture to create a Customer instance with dummy data for testing.
     """
     return Customer(
-        id="01JFTE35ZRRZWCSKK6TBB1DZCT",
-        name="Joaozin",
-        email="joao-da-660@gmail.com",
-        created_at=datetime(2024, 12, 23, 15, 57, 25, 496623),
-        updated_at=None,
+        id="01F8MECHZX3TBDSZ7XD96VR2H5",
+        name="John Doe",
+        email="johndoe@example.com",
         active=True,
+        created_at=datetime(2024, 1, 1, 12, 0, 0),
+        updated_at=None,
     )
