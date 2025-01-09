@@ -2,7 +2,6 @@ import pytest
 from pytest import fixture
 from datetime import datetime
 from unittest.mock import MagicMock
-from models.customer_model import Customer
 from psycopg2 import DatabaseError, IntegrityError
 from storages.customer_storage import CustomerStorage
 
@@ -51,7 +50,6 @@ def test_create_customer_success(mock_cursor, storage, customer_create_row):
 )
 
     storage.db.commit.assert_called_once()
-
 
 
 def test_create_customer_integrity_error(storage, mock_cursor, customer_create_row):

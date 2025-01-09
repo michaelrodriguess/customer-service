@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, Depends, Request
+from fastapi import APIRouter, HTTPException, Response, Depends, Request, status
 import logging
 from typing import Annotated, List
 from configs.db_conn import get_database_connection
@@ -39,7 +39,7 @@ def get_customer_by_id(id: str, service: ServiceDep):
         raise HTTPException(status_code=404, detail=ex.message)
 
 
-@router.post("/customers", response_model=Customer)
+@router.post("/customers", status_code=status.HTTP_201_CREATED, response_model=Customer)
 def create_customer(customer_data: Customer, service: ServiceDep):
     logger.info(f"Creating customer with this data={customer_data}")
     created_customer = service.create_customer(customer_data)
