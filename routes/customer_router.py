@@ -117,7 +117,7 @@ def delete_customer(customer_id: str, service: ServiceDep):
         raise HTTPException(status_code=404, detail=str(e)) from e
 
 
-@router.put("/customers", response_model=CustomerUpdate)
+@router.put("/customers", response_model=Customer)
 def update_customer(customer_update: Customer, service: ServiceDep):
     """
     Atualiza totalmente os dados de um cliente.

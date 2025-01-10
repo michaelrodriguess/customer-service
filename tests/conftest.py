@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 from services.customer_service import CustomerService
 from models.customer_model import Customer, CustomerUpdate
 from storages.customer_storage import CustomerStorage, EntityNotFound
+from fastapi import testclient
 
 
 @fixture
@@ -42,6 +43,7 @@ def customer_patch_update():
         name="John Doe",
         email="johndoe@example.com",
         active=False,
+        updated_at=datetime.datetime(2024, 1, 1),
     )
 
 

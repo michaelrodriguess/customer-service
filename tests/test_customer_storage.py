@@ -71,7 +71,7 @@ def test_patch_customer_not_exist(
     with raises(
         EntityNotFound, match=f"Customer with id {customer_patch_update.id} not found"
     ):
-        storage.update_customer(customer_patch_update)
+        storage.patch_customer(customer_patch_update)
 
 
 def test_patch_customer_integrity_error(
@@ -81,7 +81,7 @@ def test_patch_customer_integrity_error(
     cursor_mock.execute.side_effect = IntegrityError()
 
     with raises(IntegrityError):
-        storage.update_customer(customer_patch_update)
+        storage.patch_customer(customer_patch_update)
 
 
 def test_patch_customer_database_error(
@@ -91,7 +91,7 @@ def test_patch_customer_database_error(
     cursor_mock.execute.side_effect = DatabaseError()
 
     with raises(DatabaseError):
-        storage.update_customer(customer_patch_update)
+        storage.patch_customer(customer_patch_update)
 
 
 """
