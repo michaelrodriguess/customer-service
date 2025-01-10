@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 from pytest import fixture
 
 from models.customer_model import Customer
-from storages.customer_storage import CustomerStorage
 
 
 @fixture(name="mock_cursor")
@@ -25,15 +24,6 @@ def fixture_mock_db(mock_cursor):
     mock_db = MagicMock()
     mock_db.cursor.return_value.__enter__.return_value = mock_cursor
     return mock_db
-
-
-@fixture
-def storage(mock_db):
-    """
-    This enables testing of the `CustomerStorage` class without requiring a real database,
-    ensuring controlled and predictable behavior during tests.
-    """
-    return CustomerStorage(mock_db)
 
 
 @fixture

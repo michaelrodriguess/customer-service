@@ -1,7 +1,16 @@
 import pytest
 from datetime import datetime
 from psycopg2 import DatabaseError
+from storages.customer_storage import CustomerStorage
 
+
+@pytest.fixture(name="storage")
+def fixture_storage(mock_db):
+    """
+    This enables testing of the `CustomerStorage` class without requiring a real database,
+    ensuring controlled and predictable behavior during tests.
+    """
+    return CustomerStorage(mock_db)
 
 @pytest.fixture(name="customer_row")
 def fixture_customer_row():
