@@ -1,16 +1,5 @@
-import pytest
-from unittest.mock import MagicMock
-from storages.customer_storage import CustomerStorage
+from pytest import raises
 from psycopg2 import DatabaseError
-
-
-@pytest.fixture
-def storage():
-    mock_db = MagicMock()
-    cursor_mock = MagicMock()
-    mock_db.cursor.return_value.__enter__.return_value = cursor_mock
-    storage = CustomerStorage(db_connection=mock_db)
-    return storage, cursor_mock
 
 
 def test_delete_customer(storage):
@@ -35,7 +24,7 @@ def test_delete_customer_not_found(storage):
     customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
     cursor_mock.rowcount = 0
 
-    with pytest.raises(KeyError, match=f"Customer id={customer_id} not found or already inactive."):
+    with raises(KeyError, match=f"Customer id={customer_id} not found or already inactive."):
         storage.delete_customer(customer_id)
 
     cursor_mock.execute.assert_called_once_with(
@@ -54,6 +43,6 @@ def test_delete_customer_database_error(storage):
 
     cursor_mock.execute.side_effect = DatabaseError()
 
-    with pytest.raises(DatabaseError):
+    with raises(DatabaseError):
         storage.delete_customer(customer_id)
         storage.db.rollback.assert_called_once()
