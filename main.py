@@ -1,10 +1,9 @@
 """
 This module handles the initialisation of FastApi
 """
-
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from configs.db_conn import get_database_connection
 from services.customer_service import CustomerService
 from storages.customer_storage import CustomerStorage
@@ -42,4 +41,3 @@ def health_check():
     Healthy check to see if the application is working in a basic way
     """
     return {"status": "healthy"}
-

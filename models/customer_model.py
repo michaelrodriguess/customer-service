@@ -1,7 +1,6 @@
 """
 This module deals with models, specifying what each model needs and uses.
 """
-
 from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
 from typing import Optional
@@ -14,18 +13,18 @@ class Customer(BaseModel):
     """
     id: str = Field(
         default_factory=lambda: str(ulid.new()),
-        description="Identificador único do cliente no formato ULID.",
+        description="Unique customer identifier in ULID format.",
     )
-    name: str = Field(..., description="Nome do cliente.")
-    email: EmailStr = Field(..., description="Endereço de email válido do cliente.")
+    name: str = Field(..., description="Customer name")
+    email: EmailStr = Field(..., description="Valid customer email adress")
     active: bool = Field(
-        default=True, description="Status do cliente (ativo ou inativo)."
+        default=True, description="Customer status (active or inactive)."
     )
     created_at: datetime = Field(
-        default_factory=datetime.now, description="Data de criação do cliente."
+        default_factory=datetime.now, description="Customer creation date."
     )
     updated_at: datetime | None = Field(
-        default=None, description="Data de atualização do cliente."
+        default=None, description="Customer update date."
     )
 
 
@@ -33,30 +32,21 @@ class CustomerUpdate(BaseModel):
     """
     Represents the partial update of a customer. At least one field must be provided.
     """
-    id: str = Field(..., description="Identificador único do cliente no formato ULID.")
-    name: Optional[str] = Field(None, description="Nome do cliente (opcional).")
+    id: str = Field(..., description="Unique customer identifier in ULID format.")
+    name: Optional[str] = Field(None, description="Customer name (optional).")
     email: Optional[EmailStr] = Field(
-        None, description="Endereço de email válido do cliente (opcional)."
+        None, description="Valid customer email address (optional)."
     )
-    active: Optional[bool] = Field(None, description="Status do cliente (opcional).")
+    active: Optional[bool] = Field(None, description="Customer status (optional).")
     updated_at: datetime = Field(
         default_factory=datetime.now,
-        description="Data de atualização do cliente (opcional).",
+        description="Customer update date (optional).",
     )
 
     @model_validator(mode="before")
     def check_at_least_one_field(cls, values):
         """
         Validates that at least one field, in addition to ‘id’, is provided for updating.
-
-        Args:
-            values (dict): Dictionary with the model's values.
-
-        Raises:
-            ValueError: If no field other than ‘id’ is supplied.
-            
-        Returns:
-            dict: The validated values.
         """
         required_keys = [
             key for key, value in values.items() if key != "id" and value is not None

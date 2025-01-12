@@ -1,5 +1,5 @@
 """
-This module contains tests for the customer-related routes in the FastAPI application.
+Tests for customer-related routes in the FastAPI application.
 """
 from unittest.mock import MagicMock
 from pytest import fixture
@@ -11,10 +11,7 @@ from routes.customer_router import get_customer_service
 @fixture(name="service")
 def fixture_service():
     """
-    The mock service simulates the behavior of the `CustomerService` class,
-    enabling testing of FastAPI routes without relying on the actual service logic.
-    Returns:
-        MagicMock: A mocked instance of the CustomerService.
+    Mocked CustomerService instance.
     """
     return MagicMock()
 
@@ -22,12 +19,7 @@ def fixture_service():
 @fixture(name="client")
 def fixture_client(service):
     """
-    The test client overrides the `get_customer_service` dependency in the application
-    with the mocked `service` fixture, allowing tests to simulate API interactions.
-    Args:
-        service (MagicMock): A mocked instance of the CustomerService.
-    Returns:
-        TestClient: A TestClient instance for simulating requests.
+    Test client with mocked service dependency.
     """
     app.dependency_overrides[get_customer_service] = lambda: service
     client = TestClient(app)
@@ -37,9 +29,7 @@ def fixture_client(service):
 @fixture(name="customer_json")
 def fixture_customer_json():
     """
-    This fixture provides a sample customer JSON object used in tests.
-    Returns:
-        dict: A dictionary representing a fictional customer.
+    Sample customer data for tests.
     """
     return {
         "id": "01F8MECHZX3TBDSZ7XD96VR2H5",
@@ -53,11 +43,8 @@ def fixture_customer_json():
 
 
 def test_router_create_customer(service, client, customer, customer_json):
-
     """
-    Test the creation of a customer through the FastAPI route.
-    Verifies that the route correctly interacts with the service layer
-    and returns the expected response.
+    Test customer creation route.
     """
     service.create_customer.return_value = customer_json
     response = client.post("/customers", json=customer_json)
@@ -69,7 +56,7 @@ def test_router_create_customer(service, client, customer, customer_json):
 
 def test_route_delete_customer(client, service):
     """
-    Tests the route for deleting a customer via the FastAPI.
+    Tests the deleting a customer route.
     """
     customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
 

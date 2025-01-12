@@ -10,9 +10,7 @@ from services.customer_service import CustomerService
 @fixture(name="mock_storage")
 def fixture_mock_storage():
     """
-    Fixture that provides a mocked storage object.
-    Returns:
-        MagicMock: A mocked instance of the CustomerStorage.
+        Provides a mocked CustomerStorage instance.
     """
     return MagicMock()
 
@@ -20,11 +18,7 @@ def fixture_mock_storage():
 @fixture(name="service")
 def fixture_service(mock_storage):
     """
-    Fixture that provides an instance of `CustomerService` using a mocked storage.
-    Args:
-        mock_storage (MagicMock): A mocked CustomerStorage instance.
-    Returns:
-        CustomerService: An instance of the CustomerService class.
+    Provides a CustomerService instance with mocked storage.
     """
     return CustomerService(mock_storage)
 
@@ -42,7 +36,7 @@ def test_create_customer_success(customer, mock_storage, service):
 
 def test_create_customer_database_error(customer, mock_storage, service):
     """
-    Test the handling of DatabaseError when creating a customer in the service layer.
+    Test the DatabaseError when creating a customer in the service layer.
     """
     mock_storage.create_customer.side_effect = DatabaseError()
 
@@ -68,7 +62,8 @@ def test_delete_customer_key_error(service):
     """
     customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
 
-    service.storage.delete_customer.side_effect = KeyError("Simulating the KeyError")
+    service.storage.delete_customer.side_effect = KeyError(
+        "Simulating the KeyError")
 
     with raises(KeyError):
         service.delete_customer(customer_id)

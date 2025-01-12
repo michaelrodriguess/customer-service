@@ -1,6 +1,5 @@
 """
-This module contains tests for the CustomerStorage class, simulating database interactions 
-using mock objects for the cursor and database connection.
+Tests for CustomerStorage using mock database interactions.
 """
 from unittest.mock import MagicMock
 from pytest import fixture, raises
@@ -11,9 +10,7 @@ from storages.customer_storage import CustomerStorage
 @fixture(name="cursor")
 def fixture_cursor():
     """
-    Creates a mock cursor object to simulate database interactions.
-    Returns:
-        MagicMock: A mock cursor object.
+    Creates a mock cursor for database interactions.
     """
     return MagicMock()
 
@@ -21,11 +18,7 @@ def fixture_cursor():
 @fixture(name="db_conn")
 def fixture_db_conn(cursor: MagicMock):
     """
-    Creates a mock database connection object with a mock cursor.
-    Args:
-        cursor (MagicMock): A mock cursor object.
-    Returns:
-        MagicMock: A mock database connection object.
+    Creates a mock database connection using the provided cursor.
     """
     db_conn = MagicMock()
     db_conn.cursor.return_value.__enter__.return_value = cursor
@@ -35,11 +28,7 @@ def fixture_db_conn(cursor: MagicMock):
 @fixture(name="storage")
 def fixture_storage(db_conn: MagicMock) -> CustomerStorage:
     """
-    Creates an instance of CustomerStorage with a mock database connection.
-    Args:
-        db_conn (MagicMock): A mock database connection object.
-    Returns:
-        CustomerStorage: A storage instance using the mock database connection.
+    Creates a CustomerStorage instance with a mock database connection.
     """
     return CustomerStorage(db_conn)
 
@@ -115,7 +104,9 @@ def test_delete_customer_not_found(storage, cursor):
     customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
     cursor.rowcount = 0
 
-    with raises(KeyError, match=f"Customer id={customer_id} not found or already inactive."):
+    with raises(
+        KeyError,
+            match=f"Customer id={customer_id} not found or already inactive."):
         storage.delete_customer(customer_id)
 
     cursor.execute.assert_called_once_with(
