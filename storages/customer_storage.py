@@ -1,19 +1,6 @@
 """
-Module for storing customer-related data.
-This module contains the `CustomerStorage` class, which manages CRUD operations
-operations on the PostgreSQL database for customer data. It includes methods for
-get, create, update, delete and list customers, as well as assisting in mapping
-mapping between the database and customer models.
-Functions:
-    - get_customer_by_id: Searches for a customer by ID.
-    - get_all_customers: Gets all active customers.
-    - create_customer: Creates a new customer.
-    - delete_customer: Marks a customer as inactive.
-    - update_customer: Updates a customer's data.
-    - patch_customer: Partially updates a customer's data.
-    - customer_transform: Converts a customer's data into a tuple for the `CustomerUpdate` model.
+Module for managing customer data.
 """
-
 import logging
 from datetime import datetime
 from typing import List
@@ -30,18 +17,13 @@ class CustomerStorage:
     def __init__(self, db_connection: connection):
         """
         Initialises the class with the database connection.
-
-        Args:
-            db_connection (connection): Connection to the PostgreSQL database.
         """
         self.logger = logging.getLogger(__name__)
         self.db = db_connection
 
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        This method fetches a customer record from the `customers` table based on the provided 
-        customer ID. Only active customers (`active = true`) are considered. If no matching record 
-        is found, a ValueError is raised.
+        Fetch an active customer by ID.
         """
         self.logger.info("Getting a customer by ID in DB")
         try:
@@ -70,8 +52,7 @@ class CustomerStorage:
 
     def get_all_customers(self) -> List[Customer]:
         """
-        This method queries the `customers` table to fetch all customer records where the 
-        `active` status is set to `true`. The retrieved rows are mapped into `Customer` objects.
+        Fetch all active customers."
         """
         self.logger.info("Getting all customers in DB")
         try:
@@ -93,16 +74,6 @@ class CustomerStorage:
     def create_customer(self, customer: Customer) -> Customer:
         """
         Creates a new client in the database.
-
-        Args:
-            customer (Customer): Instance of the customer to be created.
-
-        Returns:
-            Customer: The customer created.
-
-        Raises:
-            IntegrityError: If there is an integrity error in the database.
-            DatabaseError: If there is an error inserting the customer into the database.
         """
         self.logger.info("Starting operation to insert customer into the database.")
         try:
@@ -139,13 +110,6 @@ class CustomerStorage:
     def delete_customer(self, customer_id: str):
         """
         Marks a customer as inactive in the database.
-
-        Args:
-            customer_id (str): The ID of the customer to be deleted.
-
-        Raises:
-            DatabaseError: If an error occurs when accessing the database.
-            KeyError: If the customer is not found or is already inactive.
         """
         self.logger.info("Deleting customer with id %s", customer_id)
         try:
@@ -172,12 +136,6 @@ class CustomerStorage:
     def map_customer_row_to_model(self, row: List) -> Customer:
         """
         Maps a database row to a client model.
-
-        Args:
-            row (List): The row retrieved from the database.
-
-        Returns:
-            Customer: The mapped customer model.
         """
         return Customer(
             id=row[0], name=row[1], email=row[2], created_at=row[3], updated_at=row[4]
@@ -186,17 +144,6 @@ class CustomerStorage:
     def update_customer(self, customer_update) -> CustomerUpdate:
         """
         Updates a client in the database with the new data provided.
-
-        Args:
-            customer_update (CustomerUpdate): The updated customer data.
-
-        Returns:
-            CustomerUpdate: The updated customer.
-
-        Raises:
-            EntityNotFound: If the customer is not found.
-            IntegrityError: If there is an integrity error in the database.
-            DatabaseError: If an error occurs when updating the customer's data.
         """
         self.logger.info(
             "Updating customer: %s, with id: %s",
@@ -250,18 +197,6 @@ class CustomerStorage:
     def patch_customer(self, customer_update: CustomerUpdate) -> CustomerUpdate:
         """
         Partially updates a customer's data in the database.
-
-        Args:
-            customer_update (CustomerUpdate): The updated customer data.
-
-        Returns:
-            CustomerUpdate: The updated customer.
-
-        Raises:
-            EntityNotFound: If the customer is not found.
-            IntegrityError: If there is an integrity error in the database.
-            DatabaseError: If an error occurs when updating the customer's data.
-
         """
         self.logger.info(
             "Partial updating customer: %s, with id: %s",
@@ -309,16 +244,9 @@ class CustomerStorage:
             self.logger.error("Failed to update customer in DB: %s", ex)
             raise
 
-
     def customer_transform(self, customer_tuple: tuple) -> CustomerUpdate:
         """
         Converts a customer's data into a tuple for the CustomerUpdate model.
-
-        Args:
-            customer_tuple (tuple): The tuple containing the customer's data.
-
-        Returns:
-            CustomerUpdate: The transformed customer model.
         """
         return CustomerUpdate(
             id=customer_tuple[0],

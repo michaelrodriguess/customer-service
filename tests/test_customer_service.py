@@ -1,65 +1,71 @@
 """
 This module contains tests for the CustomerService class.
 """
-
 from unittest.mock import MagicMock
-import pytest
-from psycopg2 import DatabaseError, IntegrityError
+from pytest import fixture, raises
+from psycopg2 import DatabaseError
 from services.customer_service import CustomerService
 
 
-@pytest.fixture(name="mock_storage")
+@fixture(name="mock_storage")
 def fixture_mock_storage():
     """
-    Fixture that provides a mocked storage object.
-    Returns:
-        MagicMock: A mocked instance of the CustomerStorage.
+        Provides a mocked CustomerStorage instance.
     """
     return MagicMock()
 
 
-@pytest.fixture(name="service")
+@fixture(name="service")
 def fixture_service(mock_storage):
     """
-    Fixture that provides an instance of `CustomerService` using a mocked storage.
-    Args:
-        mock_storage (MagicMock): A mocked CustomerStorage instance.
-    Returns:
-        CustomerService: An instance of the CustomerService class.
+    Provides a CustomerService instance with mocked storage.
     """
     return CustomerService(mock_storage)
 
 
-def test_create_customer_success(customer_create_row, mock_storage, service):
+def test_create_customer_success(customer, mock_storage, service):
     """
     Test the successful creation of a customer in the service layer.
     """
-    mock_storage.create_customer.return_value = customer_create_row
+    mock_storage.create_customer.return_value = customer
 
-    result = service.create_customer(customer_create_row)
-    assert result == customer_create_row
-    mock_storage.create_customer.assert_called_once_with(customer_create_row)
+    result = service.create_customer(customer)
+    assert result == customer
+    mock_storage.create_customer.assert_called_once_with(customer)
 
 
-def test_create_customer_integrity_error(customer_create_row, mock_storage, service):
+def test_create_customer_database_error(customer, mock_storage, service):
     """
-    Test the handling of IntegrityError when creating a customer in the service layer.
-    """
-    mock_storage.create_customer.side_effect = IntegrityError()
-
-    with pytest.raises(IntegrityError):
-        service.create_customer(customer_create_row)
-
-    mock_storage.create_customer.assert_called_once_with(customer_create_row)
-
-
-def test_create_customer_database_error(customer_create_row, mock_storage, service):
-    """
-    Test the handling of DatabaseError when creating a customer in the service layer.
+    Test the DatabaseError when creating a customer in the service layer.
     """
     mock_storage.create_customer.side_effect = DatabaseError()
 
-    with pytest.raises(DatabaseError):
-        service.create_customer(customer_create_row)
+    with raises(DatabaseError):
+        service.create_customer(customer)
 
-    mock_storage.create_customer.assert_called_once_with(customer_create_row)
+    mock_storage.create_customer.assert_called_once_with(customer)
+
+
+def test_delete_customer_calls_storage(service):
+    """
+    Tests if the service calls the storage method to delete a customer.
+    """
+    customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
+
+    service.storage.delete_customer(customer_id)
+    service.storage.delete_customer.assert_called_once_with(customer_id)
+
+
+def test_delete_customer_key_error(service):
+    """
+    Tests if the service handles KeyError when deleting a customer.
+    """
+    customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
+
+    service.storage.delete_customer.side_effect = KeyError(
+        "Simulating the KeyError")
+
+    with raises(KeyError):
+        service.delete_customer(customer_id)
+
+    service.storage.delete_customer.assert_called_once()

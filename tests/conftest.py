@@ -1,15 +1,13 @@
 """
 This module contains test fixtures for the customer service.
 """
-
+from pytest import fixture
+from models.customer_model import Customer
 from datetime import datetime
 
-from pytest import fixture
-
-from models.customer_model import Customer
 
 @fixture
-def customer_create_row():
+def customer():
     """
     Fixture to create a Customer instance with dummy data for testing.
     """
