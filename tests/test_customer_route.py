@@ -1,7 +1,6 @@
 """
 This module contains tests for the customer-related routes in the FastAPI application.
 """
-
 from unittest.mock import MagicMock
 from pytest import fixture
 from fastapi.testclient import TestClient
@@ -48,11 +47,13 @@ def fixture_customer_json():
         "email": "johndoe@example.com",
         "active": True,
         "created_at": "2024-01-01T12:00:00",
+
         "updated_at": None,
     }
 
 
 def test_router_create_customer(service, client, customer, customer_json):
+
     """
     Test the creation of a customer through the FastAPI route.
     Verifies that the route correctly interacts with the service layer

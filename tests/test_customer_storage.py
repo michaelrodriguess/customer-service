@@ -2,7 +2,6 @@
 This module contains tests for the CustomerStorage class, simulating database interactions 
 using mock objects for the cursor and database connection.
 """
-
 from unittest.mock import MagicMock
 from pytest import fixture, raises
 from psycopg2 import DatabaseError, IntegrityError
@@ -83,6 +82,7 @@ def test_create_customer_database_error(storage, cursor, customer):
     cursor.execute.side_effect = DatabaseError()
 
     with raises(DatabaseError):
+
         storage.create_customer(customer)
 
     storage.db.rollback.assert_called_once()
@@ -137,5 +137,5 @@ def test_delete_customer_database_error(storage, cursor):
 
     with raises(DatabaseError):
         storage.delete_customer(customer_id)
-        
+
     storage.db.rollback.assert_called_once()
