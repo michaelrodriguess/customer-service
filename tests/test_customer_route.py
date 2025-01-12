@@ -52,7 +52,7 @@ def fixture_customer_json():
     }
 
 
-def test_router_create_customer(service, client, customer_create_row, customer_json):
+def test_router_create_customer(service, client, customer, customer_json):
     """
     Test the creation of a customer through the FastAPI route.
     Verifies that the route correctly interacts with the service layer
@@ -63,18 +63,17 @@ def test_router_create_customer(service, client, customer_create_row, customer_j
 
     assert response.status_code == 201
     assert response.json() == customer_json
-    service.create_customer.assert_called_once_with(customer_create_row)
+    service.create_customer.assert_called_once_with(customer)
 
 
-def test_route_delete_customer(router):
+def test_route_delete_customer(client, service):
     """
     Tests the route for deleting a customer via the FastAPI.
     """
-    mock_service, client = router
     customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
 
-    mock_service.delete_customer.return_value = None
+    service.delete_customer.return_value = None
     response = client.delete(f"/customers/{customer_id}")
 
     assert response.status_code == 204
-    mock_service.delete_customer.assert_called_once_with(customer_id)
+    service.delete_customer.assert_called_once_with(customer_id)
