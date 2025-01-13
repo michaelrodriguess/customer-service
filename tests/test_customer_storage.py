@@ -130,3 +130,51 @@ def test_delete_customer_database_error(storage, cursor):
         storage.delete_customer(customer_id)
 
     storage.db.rollback.assert_called_once()
+
+
+def test_get_customer_by_email(storage, cursor, customer, list_customer):
+    """
+    Tests if get retrives a customer by email from database.
+    """
+    customer_email = "johndoe@example.com"
+    cursor.fetchone.return_value = list_customer
+
+    result = storage.get_customer_by_email(customer_email)
+    assert result == customer
+
+    cursor.execute.assert_called_once_with(
+                    """
+                    SELECT id, name, email, created_at, updated_at, active
+                    FROM customers
+                    WHERE email = %s AND active = true;
+                    """,
+                    (customer_email,),
+    )
+
+
+def test_get_customer_by_email_not_found(cursor, storage):
+    """
+    Tests if the customer does not exist in the database.
+    """
+    customer_email = "johndoe@example.com"
+    cursor.fetchone.return_value = None
+
+    with raises(ValueError):
+        storage.get_customer_by_email(customer_email)
+
+    cursor.execute.assert_called_once()
+    cursor.fetchone.assert_called_once()
+
+
+def test_get_customer_by_email_database_error(cursor, storage):
+    """
+    Tests the case of having a database error.
+    """
+    customer_email = "johndoe@example.com"
+    cursor.execute.side_effect = DatabaseError()
+
+    with raises(DatabaseError):
+        storage.get_customer_by_email(customer_email)
+
+    cursor.execute.assert_called_once()
+    cursor.fetchall.ssert_not_called()
