@@ -265,7 +265,7 @@ def test_patch_customer_integrity_error(
     Args:
         cursor (MagicMock): The mock cursor object.
         storage (CustomerStorage): The storage instance.
-        customer_patch_update (CustomerUpdate): Partial customer data to update.
+        customer_patch_update (CustomerUpdate): Partial customer data to patch update.
     """
     cursor.execute.side_effect = IntegrityError()
 
