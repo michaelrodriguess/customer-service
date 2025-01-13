@@ -1,8 +1,11 @@
 """
 Tests for CustomerStorage using mock database interactions.
 """
+
 from unittest.mock import MagicMock
+import pytest
 from pytest import fixture, raises
+from datetime import datetime
 from psycopg2 import DatabaseError, IntegrityError
 from storages.customer_storage import CustomerStorage
 
@@ -24,6 +27,7 @@ def fixture_db_conn(cursor: MagicMock):
     db_conn.cursor.return_value.__enter__.return_value = cursor
     return db_conn
 
+
 @fixture(name="storage")
 def fixture_storage(db_conn: MagicMock) -> CustomerStorage:
     """
@@ -31,7 +35,8 @@ def fixture_storage(db_conn: MagicMock) -> CustomerStorage:
     """
     return CustomerStorage(db_conn)
 
-@pytest.fixture(name="customer_row")
+
+@fixture(name="customer_row")
 def fixture_customer_row():
     """
     Fixture that returns a tuple representing a fictional customer.
@@ -124,11 +129,12 @@ def test_create_customer_success(cursor, storage, customer):
     assert result == customer
 
     cursor.execute.assert_called_once_with(
-                    """
+        """
                     INSERT INTO customers (id, name, email, created_at, active)
                     VALUES (%s, %s, %s, NOW(), TRUE);
                     """,
-                    (customer.id, customer.name, customer.email),)
+        (customer.id, customer.name, customer.email),
+    )
 
     storage.db.commit.assert_called_once()
 
@@ -153,7 +159,6 @@ def test_create_customer_database_error(storage, cursor, customer):
     cursor.execute.side_effect = DatabaseError()
 
     with raises(DatabaseError):
-
         storage.create_customer(customer)
 
     storage.db.rollback.assert_called_once()
@@ -169,13 +174,13 @@ def test_delete_customer(storage, cursor):
 
     storage.delete_customer(customer_id)
     cursor.execute.assert_called_once_with(
-                    """
+        """
                     UPDATE customers
                     SET active = FALSE, updated_at = NOW()
                     WHERE id = %s AND active = TRUE;
                     """,
-                    (customer_id,),
-        )
+        (customer_id,),
+    )
     storage.db.commit.assert_called_once()
 
 
@@ -187,17 +192,18 @@ def test_delete_customer_not_found(storage, cursor):
     cursor.rowcount = 0
 
     with raises(
-        KeyError,
-            match=f"Customer id={customer_id} not found or already inactive."):
+        KeyError, match=f"Customer id={customer_id} not found or already inactive."
+    ):
         storage.delete_customer(customer_id)
 
     cursor.execute.assert_called_once_with(
-                    """
+        """
                     UPDATE customers
                     SET active = FALSE, updated_at = NOW()
                     WHERE id = %s AND active = TRUE;
                     """,
-                    (customer_id,),)
+        (customer_id,),
+    )
 
 
 def test_delete_customer_database_error(storage, cursor):

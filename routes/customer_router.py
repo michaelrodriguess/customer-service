@@ -27,7 +27,7 @@ def get_all_customers(service: ServiceDep):
     """
     This endpoint handles HTTP GET requests to fetch a list of all customers.
     """
-    logger.info(f"Getting all customers")
+    logger.info("Getting all customers")
     customers = service.get_all_customers()
 
     logger.info(
@@ -84,15 +84,6 @@ def update_customer(customer_update: Customer, service: ServiceDep):
     """
     Fully updates a customer's data.
     """
-    logger.info("Starting the process to fully update customer %s", customer_update)
-    try:
-
-    Returns:
-        CustomerUpdate: Cliente atualizado.
-
-    Raises:
-        HTTPException: Se o cliente não for encontrado.
-
     logger.info("Starting the process to fully update customer %s", customer_update)
     try:
         updated_customer = service.update_customer(customer_update)

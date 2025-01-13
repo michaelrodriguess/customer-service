@@ -2,6 +2,7 @@
 This module contains tests for the CustomerService class.
 """
 from unittest.mock import MagicMock
+import pytest
 from pytest import fixture, raises
 from psycopg2 import DatabaseError
 
