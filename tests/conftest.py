@@ -22,7 +22,7 @@ def customer():
 
 
 @fixture
-def list_customer():
+def customer_row():
     """
     Fixture to create a tuple for the test return.
     """

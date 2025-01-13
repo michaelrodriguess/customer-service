@@ -77,4 +77,5 @@ def test_router_get_customer_by_email(client, service, customer_json):
     response = client.get(f"/customers/email/{customer_email}")
 
     assert response.status_code == 200
+    assert response.json() == customer_json
     service.get_customer_by_email.assert_called_once_with(customer_email)

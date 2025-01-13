@@ -132,12 +132,12 @@ def test_delete_customer_database_error(storage, cursor):
     storage.db.rollback.assert_called_once()
 
 
-def test_get_customer_by_email(storage, cursor, customer, list_customer):
+def test_get_customer_by_email(storage, cursor, customer, customer_row):
     """
     Tests if get retrives a customer by email from database.
     """
     customer_email = "johndoe@example.com"
-    cursor.fetchone.return_value = list_customer
+    cursor.fetchone.return_value = customer_row
 
     result = storage.get_customer_by_email(customer_email)
     assert result == customer
