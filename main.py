@@ -9,6 +9,7 @@ from services.customer_service import CustomerService
 from storages.customer_storage import CustomerStorage
 from routes.customer_router import router
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +23,6 @@ async def lifespan(app: FastAPI):
     customer_service = CustomerService(customer_storage)
 
     yield {"customer_service": customer_service}
-
     logger.info("Shutdown application")
 
 

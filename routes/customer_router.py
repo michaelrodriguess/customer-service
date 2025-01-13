@@ -27,7 +27,7 @@ def get_all_customers(service: ServiceDep):
     """
     This endpoint handles HTTP GET requests to fetch a list of all customers.
     """
-    logger.info(f"Getting all customers")
+    logger.info("Getting all customers")
     customers = service.get_all_customers()
 
     logger.info(
@@ -75,7 +75,6 @@ def delete_customer(customer_id: str, service: ServiceDep):
         service.delete_customer(customer_id)
         logger.info("Delete customer request finished with response=204")
         return Response(status_code=204)
-
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
 
@@ -87,7 +86,6 @@ def update_customer(customer_update: Customer, service: ServiceDep):
     """
     logger.info("Starting the process to fully update customer %s", customer_update)
     try:
-
         updated_customer = service.update_customer(customer_update)
         logger.info(
             "Full update customer request finished with response=%s", updated_customer
@@ -95,7 +93,6 @@ def update_customer(customer_update: Customer, service: ServiceDep):
         return updated_customer
     except EntityNotFound as e:
         raise HTTPException(status_code=404, detail=e.message) from e
-
 
 
 @router.patch("/customers", response_model=CustomerUpdate)

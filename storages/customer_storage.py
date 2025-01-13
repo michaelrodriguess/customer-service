@@ -4,8 +4,10 @@ Module for managing customer data.
 import logging
 from datetime import datetime
 from typing import List
+
 from psycopg2 import DatabaseError, IntegrityError, sql
 from psycopg2._psycopg import connection
+
 from exceptions.customer_exceptions import EntityNotFound
 from models.customer_model import CustomerUpdate, Customer
 
@@ -141,6 +143,7 @@ class CustomerStorage:
             id=row[0], name=row[1], email=row[2], created_at=row[3], updated_at=row[4]
         )
 
+
     def update_customer(self, customer_update) -> CustomerUpdate:
         """
         Updates a client in the database with the new data provided.
@@ -154,10 +157,11 @@ class CustomerStorage:
             with self.db.cursor() as cursor:
                 query = sql.SQL(
                     """
-                                UPDATE customers
-                                SET name =%s, email =%s, updated_at=%s
-                                WHERE id = %s and active = true
-                                RETURNING id, name, email, active, updated_at """
+                    UPDATE customers
+                    SET name = %s, email = %s, updated_at = %s
+                    WHERE id = %s AND active = true
+                    RETURNING id, name, email, active, updated_at;
+                    """
                 )
                 cursor.execute(
                     query,
@@ -217,6 +221,7 @@ class CustomerStorage:
                 query = sql.SQL(
                     "UPDATE customers SET {set_string} WHERE id = %s RETURNING id, name, email, active, updated_at"
                 ).format(set_string=set_string)
+
                 cursor.execute(query, list(update_data.values()) + [customer_update.id])
 
                 updated_customer = cursor.fetchone()

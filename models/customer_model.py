@@ -4,6 +4,7 @@ This module deals with models, specifying what each model needs and uses.
 from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
 from typing import Optional
+from pydantic import BaseModel, EmailStr, Field, model_validator
 import ulid
 
 
@@ -51,6 +52,7 @@ class CustomerUpdate(BaseModel):
         required_keys = [
             key for key, value in values.items() if key != "id" and value is not None
         ]
+        print(required_keys)
 
         if not required_keys:
             raise ValueError("At least one field other than 'id' must be provided.")

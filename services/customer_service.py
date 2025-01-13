@@ -35,7 +35,6 @@ class CustomerService:
     def create_customer(self, customer: Customer):
         """
         Creates a new customer with the given data.
-
         """
         self.logger.info("Creating customer with this data=%s", customer)
         return self.storage.create_customer(customer)

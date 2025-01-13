@@ -1,10 +1,12 @@
 """
 This module contains test fixtures for the customer service.
 """
-from pytest import fixture
-from models.customer_model import Customer
 from datetime import datetime
+from unittest.mock import MagicMock
 
+from pytest import fixture
+
+from models.customer_model import Customer
 
 @fixture
 def customer():
