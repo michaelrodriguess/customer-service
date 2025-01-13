@@ -10,7 +10,7 @@ from services.customer_service import CustomerService
 @fixture(name="mock_storage")
 def fixture_mock_storage():
     """
-        Provides a mocked CustomerStorage instance.
+    Provides a mocked CustomerStorage instance.
     """
     return MagicMock()
 
