@@ -1,16 +1,16 @@
 """
-Esse módulo lida com as models, especificando o que cada model precisa e utiliza.
+This module deals with models, specifying what each model needs and uses.
 """
 
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, model_validator
 import ulid
 
 
 class Customer(BaseModel):
     """
-    Representa um cliente com informações como nome, email e status.
+    Represents a customer with information such as name, email and status.
     """
 
     id: str = Field(
@@ -32,7 +32,7 @@ class Customer(BaseModel):
 
 class CustomerUpdate(BaseModel):
     """
-    Representa a atualização parcial de um cliente. Pelo menos um campo deve ser fornecido.
+    Represents the partial update of a customer. At least one field must be provided.
     """
 
     id: str = Field(..., description="Identificador único do cliente no formato ULID.")
@@ -45,28 +45,3 @@ class CustomerUpdate(BaseModel):
         default_factory=datetime.now,
         description="Data de atualização do cliente (opcional).",
     )
-
-    @model_validator(mode="before")
-    def check_at_least_one_field(cls, values):
-        """
-        Valida que pelo menos um campo, além do 'id', seja fornecido para atualização.
-
-        Args:
-            values (dict): Dicionário com os valores do modelo.
-
-        Raises:
-            ValueError: Se nenhum campo além do 'id' for fornecido.
-
-        Returns:
-            dict: Os valores validados.
-        """
-        # Verificando se algum campo além do 'id' foi fornecido
-        required_keys = [
-            key for key, value in values.items() if key != "id" and value is not None
-        ]
-        print(required_keys)
-
-        if not required_keys:
-            raise ValueError("At least one field other than 'id' must be provided.")
-
-        return values

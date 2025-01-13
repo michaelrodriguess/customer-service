@@ -1,64 +1,80 @@
-from pytest import fixture, raises
+"""
+This module contains test fixtures for the customer service.
+
+The fixtures provide mock objects and data to facilitate testing of the
+`CustomerService` and related components, ensuring that test cases are isolated
+and do not depend on actual database connections or external systems.
+"""
+
+from pytest import fixture
 import datetime
 from unittest.mock import MagicMock
 from services.customer_service import CustomerService
 from models.customer_model import Customer, CustomerUpdate
 from storages.customer_storage import CustomerStorage, EntityNotFound
-from fastapi import testclient
-
-
-@fixture
-def storage():
-    mock_db = MagicMock()
-    cursor_mock = MagicMock()
-    cursor_mock.fetchone.return_value = (
-        "01F8MECHZX3TBDSZ7XD96VR2H5",
-        "John Doe",
-        "johndoe@example.com",
-        True,
-        datetime.datetime(2020, 1, 1),
-        datetime.datetime(2024, 1, 1),
-    )
-    mock_db.cursor.return_value.__enter__.return_value = cursor_mock
-    storage = CustomerStorage(db_connection=mock_db)
-    return storage, cursor_mock
 
 
 @fixture
 def customer_put_update():
+    """
+    Provides a mock `Customer` object representing a full update scenario.
+
+    Returns:
+        Customer: A customer instance with dummy data for PUT operations.
+    """
     return Customer(
         id="01F8MECHZX3TBDSZ7XD96VR2H5",
         name="John Doe",
         email="johndoe@example.com",
         active=True,
-        created_at=datetime.datetime(2020, 1, 1),
-        updated_at=datetime.datetime(2024, 1, 1),
+        created_at="2020-01-01T00:00:00",
+        updated_at="2024-01-01T00:00:00",
     )
 
 
 @fixture
 def customer_patch_update():
+    """
+    Provides a mock `CustomerUpdate` object representing a partial update scenario.
+
+    Returns:
+        CustomerUpdate: A customer update instance with dummy data for PATCH operations.
+    """
     return CustomerUpdate(
         id="01F8MECHZX3TBDSZ7XD96VR2H5",
         name="John Doe",
         email="johndoe@example.com",
         active=False,
-        updated_at=datetime.datetime(2024, 1, 1),
+        updated_at=datetime.datetime(2024, 1, 1, 0, 0),
     )
 
 
 @fixture
 def not_customer_update_put():
+    """
+    Provides a mock `Customer` object with mismatched data for negative test cases.
+
+    Returns:
+        Customer: A customer instance with differing email data for PUT tests.
+    """
     return Customer(
         id="01F8MECHZX3TBDSZ7XD96VR2H5", name="John Doe", email="test@test.com"
     )
 
 
 @fixture
-def mock_storage():
-    return MagicMock()
+def customer_create_row():
+    """
+    Provides a mock `Customer` object representing a new customer row for testing.
 
-
-@fixture
-def service(mock_storage):
-    return CustomerService(storage=mock_storage)
+    Returns:
+        Customer: A customer instance with dummy data for insertion tests.
+    """
+    return Customer(
+        id="01F8MECHZX3TBDSZ7XD96VR2H5",
+        name="John Doe",
+        email="johndoe@example.com",
+        active=True,
+        created_at=datetime.datetime(2024, 1, 1, 12, 0, 0),
+        updated_at=None,
+    )

@@ -1,11 +1,11 @@
 """
-Módulo de exceptions
+Exceptions module
 """
 
 
 class EntityNotFound(Exception):
     """
-    Exception de entidade não encontrada
+    Entity exception not found
     """
 
     def __init__(self, message: str):

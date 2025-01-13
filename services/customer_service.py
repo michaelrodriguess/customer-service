@@ -1,5 +1,5 @@
 """
-Esse módulo lida com as regras de negócio, chamando a storage.
+This module deals with the business rules by calling storage.
 """
 
 import logging
@@ -10,78 +10,72 @@ from models.customer_model import CustomerUpdate, Customer
 
 class CustomerService:
     """
-    Classe que lida com o tratamento de regras de negócio relacionadas a clientes.
+    Class that handles customer-related business rules.
     """
 
     def __init__(self, storage: CustomerStorage):
         """
-        Inicializa o serviço com a instância de armazenamento fornecida.
+        Initialises the service with the given storage instance.
 
         Args:
-            storage (CustomerStorage): Instância responsável por acessar os dados do cliente.
+            storage (CustomerStorage): Instance responsible for accessing customer data.
         """
         self.logger = logging.getLogger(__name__)
         self.storage = storage
 
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        Retorna os detalhes de um cliente específico pelo ID.
-
-        Args:
-            id_customer (str): Identificador único do cliente.
-
-        Returns:
-            Customer: Dados do cliente encontrado.
+        This method delegates the retrieval of a customer to the `storage` layer,
+        which fetches the customer record from the database based on the provided ID.
         """
         self.logger.info("Getting customer by id...")
         return self.storage.get_customer_by_id(id_customer)
 
     def get_all_customers(self) -> List[Customer]:
         """
-        Retorna a lista de todos os clientes cadastrados.
-
-        Returns:
-            List[Customer]: Lista de clientes.
+        This method delegates the retrieval of all customer records to the `storage` layer,
+        which handles the database operations. It returns a list of `Customer` objects
+        representing all customers in the system.
         """
         self.logger.info("Getting all customers...")
         return self.storage.get_all_customers()
 
-    def create_customer(self, customer: Customer) -> Customer:
+    def create_customer(self, customer: Customer):
         """
-        Cria um novo cliente com os dados fornecidos.
+        Creates a new customer with the given data.
 
         Args:
-            customer (Customer): Dados do cliente a ser criado.
+            customer (Customer): Data of the customer to be created.
 
         Returns:
-            Customer: Dados do cliente criado.
+            Customer: Data of the customer created.
         """
         self.logger.info("Creating customer with this data=%s", customer)
         return self.storage.create_customer(customer)
 
-    def update_customer(self, customer: Customer) -> Customer:
+    def update_customer(self, customer: Customer) -> CustomerUpdate:
         """
-        Atualiza completamente os dados de um cliente.
+        Completely updates a customer's data.
 
         Args:
-            customer (Customer): Dados atualizados do cliente.
+            customer (Customer): Updated customer data.
 
         Returns:
-            CustomerUpdate: Dados do cliente após a atualização.
+            CustomerUpdate: Customer data after the update.
         """
         self.logger.info("Starting the service to update customer")
         updated_customer = self.storage.update_customer(customer)
         return updated_customer
 
-    def patch_customer(self, customer: CustomerUpdate) -> CustomerUpdate:
+    def patch_customer(self, customer) -> CustomerUpdate:
         """
-        Atualiza parcialmente os dados de um cliente.
+        Partially updates a customer's data.
 
         Args:
-            customer (CustomerUpdate): Dados parciais a serem atualizados.
+            customer (CustomerUpdate): Partial data to be updated.
 
         Returns:
-            CustomerUpdate: Dados do cliente após a atualização parcial.
+            CustomerUpdate: Customer data after the partial update.
         """
         self.logger.info("Starting the service to update customer")
         updated_customer = self.storage.patch_customer(customer)
@@ -89,10 +83,10 @@ class CustomerService:
 
     def delete_customer(self, customer_id: str):
         """
-        Remove um cliente do sistema pelo ID.
+        Removes a client from the system by ID.
 
         Args:
-            customer_id (str): Identificador único do cliente a ser removido.
+            customer_id (str): Unique identifier of the customer to be removed.
 
         Returns:
             None

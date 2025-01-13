@@ -9,4 +9,3 @@ pydantic_settings
 python-dotenv
 pytest
 PyYAML
-pylint
