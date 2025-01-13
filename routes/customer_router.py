@@ -1,12 +1,9 @@
 """
-Esse módulo lida com as rotas de clientes.
+This module handles customer routes.
 """
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Response, Depends, Request, status
 import logging
 from typing import Annotated, List
-
-from fastapi import APIRouter, HTTPException, Response, Depends, Request
-
 from services.customer_service import CustomerService
 from models.customer_model import Customer, CustomerUpdate
 from exceptions.customer_exceptions import EntityNotFound
@@ -15,15 +12,9 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-def get_customer_service(request: Request) -> CustomerService:
+def get_customer_service(request: Request):
     """
-    Recupera a instância do serviço de clientes do estado da requisição.
-
-    Args:
-        request (Request): Objeto da requisição atual.
-
-    Returns:
-        CustomerService: Serviço de clientes.
+    Retrieves the client service instance from the request state.
     """
     return request.state.customer_service
 
@@ -34,12 +25,11 @@ ServiceDep = Annotated[CustomerService, Depends(get_customer_service)]
 @router.get("/customers", response_model=List[Customer])
 def get_all_customers(service: ServiceDep):
     """
-    This endpoint handles HTTP GET requests to fetch a list of all customers. 
-    It utilizes the `service` dependency to retrieve customer data and returns 
-    the results as a JSON response.
+    This endpoint handles HTTP GET requests to fetch a list of all customers.
     """
-    logger.info("Getting all customers")
+    logger.info(f"Getting all customers")
     customers = service.get_all_customers()
+
     logger.info(
         "Get all data of customers request finished with response=%s", customers
     )
@@ -49,9 +39,7 @@ def get_all_customers(service: ServiceDep):
 @router.get("/customers/{customer_id}", response_model=Customer)
 def get_customer_by_id(customer_id: str, service: ServiceDep):
     """
-    This endpoint handles HTTP GET requests to fetch a customer based on the provided ID.
-    It uses the `service` dependency to perform the lookup and returns the customer 
-    data as a JSON response. If no customer is found, it raises an HTTP 404 error
+    This endpoint handles HTTP GET requests to fetch a customer by ID.
     """
     try:
         logger.info("Getting customer with id=%s", customer_id)
@@ -66,17 +54,10 @@ def get_customer_by_id(customer_id: str, service: ServiceDep):
         ) from ex
 
 
-@router.post("/customers", response_model=Customer)
+@router.post("/customers", status_code=status.HTTP_201_CREATED, response_model=Customer)
 def create_customer(customer_data: Customer, service: ServiceDep):
     """
-    Cria um novo cliente.
-
-    Args:
-        customer_data (Customer): Dados do cliente a ser criado.
-        service (CustomerService): Serviço de clientes.
-
-    Returns:
-        Customer: Cliente criado.
+    Creates a new client.
     """
     logger.info("Creating customer with this data=%s", customer_data)
     created_customer = service.create_customer(customer_data)
@@ -87,17 +68,7 @@ def create_customer(customer_data: Customer, service: ServiceDep):
 @router.delete("/customers/{customer_id}")
 def delete_customer(customer_id: str, service: ServiceDep):
     """
-    Exclui um cliente pelo ID.
-
-    Args:
-        customer_id (str): ID do cliente.
-        service (CustomerService): Serviço de clientes.
-
-    Returns:
-        Response: Resposta HTTP com status 204.
-
-    Raises:
-        HTTPException: Se o cliente não for encontrado.
+    Deletes a customer by ID.
     """
     try:
         logger.info("Deleting customer with id=%s", customer_id)
@@ -111,18 +82,17 @@ def delete_customer(customer_id: str, service: ServiceDep):
 @router.put("/customers", response_model=CustomerUpdate)
 def update_customer(customer_update: Customer, service: ServiceDep):
     """
-    Atualiza totalmente os dados de um cliente.
-
-    Args:
-        customer_update (Customer): Dados do cliente a serem atualizados.
-        service (CustomerService): Serviço de clientes.
+    Fully updates a customer's data.
+    """
+    logger.info("Starting the process to fully update customer %s", customer_update)
+    try:
 
     Returns:
         CustomerUpdate: Cliente atualizado.
 
     Raises:
         HTTPException: Se o cliente não for encontrado.
-    """
+
     logger.info("Starting the process to fully update customer %s", customer_update)
     try:
         updated_customer = service.update_customer(customer_update)
@@ -137,17 +107,7 @@ def update_customer(customer_update: Customer, service: ServiceDep):
 @router.patch("/customers", response_model=CustomerUpdate)
 def patch_customer(customer_update: CustomerUpdate, service: ServiceDep):
     """
-    Atualiza parcialmente os dados de um cliente.
-
-    Args:
-        customer_update (CustomerUpdate): Dados do cliente a serem atualizados.
-        service (CustomerService): Serviço de clientes.
-
-    Returns:
-        CustomerUpdate: Cliente atualizado.
-
-    Raises:
-        HTTPException: Se o cliente não for encontrado.
+    Partially updates a customer's data.
     """
     logger.info("Starting the process to partially update customer %s", customer_update)
     try:

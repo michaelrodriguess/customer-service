@@ -1,5 +1,5 @@
 """
-Arquivo de conexão do banco de dados Postgresql
+Postgresql database connection file
 """
 
 import os
@@ -11,14 +11,12 @@ load_dotenv()
 
 def get_database_connection():
     """
-    Estabelece e retorna uma conexão com o banco de dados PostgreSQL.
-
-    Este método utiliza variáveis de ambiente para recuperar as credenciais de
-    acesso ao banco de dados, incluindo o nome do banco, host, usuário, senha
-    e porta.
-
+    Establishes and returns a connection to the PostgreSQL database.
+    This method uses environment variables to retrieve the credentials for
+    credentials, including the database name, host, user, password
+    and port.
     Returns:
-        connection: A conexão com o banco de dados PostgreSQL.
+        connection: The connection to the PostgreSQL database.
     """
     db_connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"),

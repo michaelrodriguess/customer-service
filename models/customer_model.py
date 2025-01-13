@@ -1,5 +1,5 @@
 """
-Esse módulo lida com as models, especificando o que cada model precisa e utiliza.
+This module deals with models, specifying what each model needs and uses.
 """
 from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
@@ -10,57 +10,45 @@ import ulid
 
 class Customer(BaseModel):
     """
-    Representa um cliente com informações como nome, email e status.
+    Represents a customer with information such as name, email and status.
     """
-
     id: str = Field(
         default_factory=lambda: str(ulid.new()),
-        description="Identificador único do cliente no formato ULID.",
+        description="Unique customer identifier in ULID format.",
     )
-    name: str = Field(..., description="Nome do cliente.")
-    email: EmailStr = Field(..., description="Endereço de email válido do cliente.")
+    name: str = Field(..., description="Customer name")
+    email: EmailStr = Field(..., description="Valid customer email adress")
     active: bool = Field(
-        default=True, description="Status do cliente (ativo ou inativo)."
+        default=True, description="Customer status (active or inactive)."
     )
     created_at: datetime = Field(
-        default_factory=datetime.now, description="Data de criação do cliente."
+        default_factory=datetime.now, description="Customer creation date."
     )
     updated_at: datetime | None = Field(
-        default=None, description="Data de atualização do cliente."
+        default=None, description="Customer update date."
     )
 
 
 class CustomerUpdate(BaseModel):
     """
-    Representa a atualização parcial de um cliente. Pelo menos um campo deve ser fornecido.
+    Represents the partial update of a customer. At least one field must be provided.
     """
-
-    id: str = Field(..., description="Identificador único do cliente no formato ULID.")
-    name: Optional[str] = Field(None, description="Nome do cliente (opcional).")
+    id: str = Field(..., description="Unique customer identifier in ULID format.")
+    name: Optional[str] = Field(None, description="Customer name (optional).")
     email: Optional[EmailStr] = Field(
-        None, description="Endereço de email válido do cliente (opcional)."
+        None, description="Valid customer email address (optional)."
     )
-    active: Optional[bool] = Field(None, description="Status do cliente (opcional).")
+    active: Optional[bool] = Field(None, description="Customer status (optional).")
     updated_at: datetime = Field(
         default_factory=datetime.now,
-        description="Data de atualização do cliente (opcional).",
+        description="Customer update date (optional).",
     )
 
     @model_validator(mode="before")
     def check_at_least_one_field(cls, values):
         """
-        Valida que pelo menos um campo, além do 'id', seja fornecido para atualização.
-
-        Args:
-            values (dict): Dicionário com os valores do modelo.
-
-        Raises:
-            ValueError: Se nenhum campo além do 'id' for fornecido.
-
-        Returns:
-            dict: Os valores validados.
+        Validates that at least one field, in addition to ‘id’, is provided for updating.
         """
-        # Verificando se algum campo além do 'id' foi fornecido
         required_keys = [
             key for key, value in values.items() if key != "id" and value is not None
         ]

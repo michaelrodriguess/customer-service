@@ -1,12 +1,9 @@
 """
-esse módulo lida com a inicialização do FastApi
+This module handles the initialisation of FastApi
 """
-
 import logging
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
-
 from configs.db_conn import get_database_connection
 from services.customer_service import CustomerService
 from storages.customer_storage import CustomerStorage
@@ -17,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(app: FastAPI):
     """
-    Método que lida com a configuração do FastApi
+    Method that handles FastApi configuration
     """
     db_connection = get_database_connection()
     customer_storage = CustomerStorage(db_connection=db_connection)
@@ -41,6 +38,6 @@ app.include_router(router)
 @app.get("/health")
 def health_check():
     """
-    Healthy check para saber se o aplicativo está funcionando de maneira básica
+    Healthy check to see if the application is working in a basic way
     """
     return {"status": "healthy"}
