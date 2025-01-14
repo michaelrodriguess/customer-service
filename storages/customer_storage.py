@@ -23,6 +23,33 @@ class CustomerStorage:
         self.logger = logging.getLogger(__name__)
         self.db = db_connection
 
+    def get_customer_by_email(self, customer_email: str) -> Customer:
+        """
+        Fetch an active customer by ID.
+        """
+        self.logger.info("Getting a customer by email in DB")
+        try:
+            with self.db.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT id, name, email, created_at, updated_at, active
+                    FROM customers
+                    WHERE email = %s AND active = true;
+                    """,
+                    (customer_email,),
+                )
+
+                result = cursor.fetchone()
+
+                if result is None:
+                    raise ValueError(f"Customer not found with email {customer_email}")
+
+                return self.map_customer_row_to_model(result)
+
+        except DatabaseError as ex:
+            self.logger.error("Failed to get a customer by email %s", ex)
+            raise
+
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
         Fetch an active customer by ID.
