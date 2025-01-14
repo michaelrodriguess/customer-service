@@ -8,10 +8,7 @@ and do not depend on actual database connections or external systems.
 
 from pytest import fixture
 import datetime
-from unittest.mock import MagicMock
-from services.customer_service import CustomerService
 from models.customer_model import Customer, CustomerUpdate
-from storages.customer_storage import CustomerStorage, EntityNotFound
 
 
 @fixture
