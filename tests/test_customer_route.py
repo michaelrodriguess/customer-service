@@ -1,5 +1,5 @@
 """
-This module contains tests for the customer-related routes in the FastAPI application.
+Tests for customer-related routes in the FastAPI application.
 """
 
 from unittest.mock import MagicMock
@@ -57,8 +57,8 @@ def fixture_customer_json():
     }
 
 
-@fixture
-def customer_put_update_json():
+@fixture(name="customer_put_update_json")
+def customer_put_json():
     """
     Provides sample data for testing PUT updates to a customer.
 
@@ -74,8 +74,8 @@ def customer_put_update_json():
     }
 
 
-@fixture
-def customer_patch_update_json():
+@fixture(name="customer_patch_update_json")
+def customer_patch_json():
     """
     Provides sample data for testing PATCH updates to a customer.
 
@@ -91,19 +91,47 @@ def customer_patch_update_json():
     }
 
 
+def test_router_get_all_customers(service, client, customer_create_row, customer_json):
+    """
+    This test verifies that the route returns the correct JSON response for all customers
+    and ensures that the `get_all_customers` method of the mocked service is called once.
+    """
+    service.get_all_customers.return_value = [customer_create_row]
+    response = client.get("/customers")
+
+    assert response.status_code == 200
+    assert response.json() == [customer_json]
+    service.get_all_customers.assert_called_once()
+
+
+def test_router_get_customer_by_id(service, client, customer_create_row, customer_json):
+    """
+    This test verifies that the route returns the correct JSON response for a customer
+    and ensures that the `get_customer_by_id` method of the mocked service is called with the correct ID.
+    """
+    service.get_customer_by_id.return_value = customer_create_row
+    response = client.get("/customers/01F8MECHZX3TBDSZ7XD96VR2H5")
+
+    assert response.status_code == 200
+    assert response.json() == customer_json
+    service.get_customer_by_id.assert_called_once_with("01F8MECHZX3TBDSZ7XD96VR2H5")
+
+
+def test_router_get_customer_by_id_value_error(service, client):
+    """
+    This test verifies that the route handles a `ValueError` raised by the mocked service
+    and returns the appropriate status code.
+    """
+    service.get_customer_by_id.side_effect = ValueError()
+    response = client.get("/customers/01F8MECHZX3TBDSZ7XD96VR2H5")
+
+    assert response.status_code == 404
+    service.get_customer_by_id.assert_called_once_with("01F8MECHZX3TBDSZ7XD96VR2H5")
+
+
 def test_router_create_customer(service, client, customer_create_row, customer_json):
     """
-    Tests the creation of a customer via the FastAPI route.
-
-    Args:
-        service (MagicMock): The mocked service.
-        client (TestClient): The test client.
-        customer_create_row (dict): Input data for creating a customer.
-        customer_json (dict): Expected response data.
-
-    Asserts:
-        - The response status code is 201.
-        - The response JSON matches the expected customer data.
+    Test customer creation route.
     """
     service.create_customer.return_value = customer_json
     response = client.post("/customers", json=customer_json)
@@ -159,7 +187,7 @@ def test_patch_customer_success(
     assert response.json() == customer_patch_update_json
 
 
-def test_put_customer_EntityNotFound(client, service, customer_put_update_json):
+def test_put_customer_entity_not_found(client, service, customer_put_update_json):
     """
     Tests the PUT operation when the customer is not found.
 
@@ -183,6 +211,7 @@ def test_patch_customer_entity_not_found(client, service, customer_patch_update_
     Args:
         client (TestClient): The test client.
         service (MagicMock): The mocked service.
+        customer (dict): Mocked return data for the PATCH update.
         customer_patch_update_json (dict): Input data for the PATCH update.
 
     Asserts:
@@ -191,3 +220,16 @@ def test_patch_customer_entity_not_found(client, service, customer_patch_update_
     service.patch_customer.side_effect = EntityNotFound("Customer not found")
     response = client.patch("/customers/", json=customer_patch_update_json)
     assert response.status_code == 404
+
+
+def test_route_delete_customer(client, service):
+    """
+    Tests the deleting a customer route.
+    """
+    customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
+
+    service.delete_customer.return_value = None
+    response = client.delete(f"/customers/{customer_id}")
+
+    assert response.status_code == 204
+    service.delete_customer.assert_called_once_with(customer_id)

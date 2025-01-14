@@ -1,17 +1,5 @@
 """
-Module for storing customer-related data.
-This module contains the `CustomerStorage` class, which manages CRUD operations
-operations on the PostgreSQL database for customer data. It includes methods for
-get, create, update, delete and list customers, as well as assisting in mapping
-mapping between the database and customer models.
-Functions:
-    - get_customer_by_id: Searches for a customer by ID.
-    - get_all_customers: Gets all active customers.
-    - create_customer: Creates a new customer.
-    - delete_customer: Marks a customer as inactive.
-    - update_customer: Updates a customer's data.
-    - patch_customer: Partially updates a customer's data.
-    - customer_transform: Converts a customer's data into a tuple for the `CustomerUpdate` model.
+Module for managing customer data.
 """
 
 import logging
@@ -42,9 +30,7 @@ class CustomerStorage:
 
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        This method fetches a customer record from the `customers` table based on the provided
-        customer ID. Only active customers (`active = true`) are considered. If no matching record
-        is found, a ValueError is raised.
+        Fetch an active customer by ID.
         """
         self.logger.info("Getting a customer by ID in DB")
         try:
@@ -73,8 +59,7 @@ class CustomerStorage:
 
     def get_all_customers(self) -> List[Customer]:
         """
-        This method queries the `customers` table to fetch all customer records where the
-        `active` status is set to `true`. The retrieved rows are mapped into `Customer` objects.
+        Fetch all active customers."
         """
         self.logger.info("Getting all customers in DB")
         try:
@@ -95,8 +80,6 @@ class CustomerStorage:
 
     def create_customer(self, customer: Customer) -> Customer:
         """
-        Creates a new client in the database.
-
         Args:
             customer (Customer): Instance of the customer to be created.
 
@@ -141,7 +124,6 @@ class CustomerStorage:
 
     def delete_customer(self, customer_id: str):
         """
-        Marks a customer as inactive in the database.
 
         Args:
             customer_id (str): The ID of the customer to be deleted.
@@ -174,7 +156,6 @@ class CustomerStorage:
 
     def map_customer_row_to_model(self, row: List) -> Customer:
         """
-        Maps a database row to a client model.
 
         Args:
             row (List): The row retrieved from the database.
@@ -188,8 +169,6 @@ class CustomerStorage:
 
     def update_customer(self, customer_update) -> Customer:
         """
-        Updates a client in the database with the new data provided.
-
         Args:
             customer_update (CustomerUpdate): The updated customer data.
 
@@ -253,8 +232,6 @@ class CustomerStorage:
 
     def patch_customer(self, customer_update: CustomerUpdate) -> CustomerUpdate:
         """
-        Partially updates a customer's data in the database.
-
         Args:
             customer_update (CustomerUpdate): The updated customer data.
 

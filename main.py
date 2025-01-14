@@ -23,7 +23,6 @@ async def lifespan(_: FastAPI):
     customer_service = CustomerService(customer_storage)
 
     yield {"customer_service": customer_service}
-
     logger.info("Shutdown application")
 
 

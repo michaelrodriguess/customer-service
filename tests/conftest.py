@@ -6,9 +6,27 @@ The fixtures provide mock objects and data to facilitate testing of the
 and do not depend on actual database connections or external systems.
 """
 
+from datetime import datetime
 from pytest import fixture
-import datetime
 from models.customer_model import Customer, CustomerUpdate
+
+
+@fixture
+def customer():
+    """
+    Provides a mock `Customer` object representing a full update scenario.
+
+    Returns:
+        Customer: A customer instance with dummy data for PUT operations.
+    """
+    return Customer(
+        id="01F8MECHZX3TBDSZ7XD96VR2H5",
+        name="John Doe",
+        email="johndoe@example.com",
+        active=True,
+        created_at=datetime(2024, 1, 1, 12, 0, 0),
+        updated_at=None,
+    )
 
 
 @fixture
@@ -24,8 +42,8 @@ def customer_put_update():
         name="John Doe",
         email="johndoe@example.com",
         active=True,
-        created_at="2020-01-01T00:00:00",
-        updated_at="2024-01-01T00:00:00",
+        created_at=datetime(2024, 1, 1, 12, 0, 0),
+        updated_at=datetime(2024, 1, 1, 00, 0, 0),
     )
 
 
@@ -42,7 +60,7 @@ def customer_patch_update():
         name="John Doe",
         email="johndoe@example.com",
         active=False,
-        updated_at=datetime.datetime(2024, 1, 1, 0, 0),
+        updated_at="2024-01-01T00:00:00",
     )
 
 
@@ -72,6 +90,6 @@ def customer_create_row():
         name="John Doe",
         email="johndoe@example.com",
         active=True,
-        created_at=datetime.datetime(2024, 1, 1, 12, 0, 0),
+        created_at=datetime(2024, 1, 1, 12, 0, 0),
         updated_at=None,
     )

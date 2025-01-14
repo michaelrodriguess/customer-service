@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 def get_customer_service(request: Request):
     """
-    Retrieves the client service instance from the request state.
 
     Args:
         request (Request): Object of the current request.
@@ -35,8 +34,6 @@ ServiceDep = Annotated[CustomerService, Depends(get_customer_service)]
 def get_all_customers(service: ServiceDep):
     """
     This endpoint handles HTTP GET requests to fetch a list of all customers.
-    It utilizes the `service` dependency to retrieve customer data and returns
-    the results as a JSON response.
     """
     logger.info("Getting all customers")
     customers = service.get_all_customers()
@@ -50,9 +47,7 @@ def get_all_customers(service: ServiceDep):
 @router.get("/customers/{customer_id}", response_model=Customer)
 def get_customer_by_id(customer_id: str, service: ServiceDep):
     """
-    This endpoint handles HTTP GET requests to fetch a customer based on the provided ID.
-    It uses the `service` dependency to perform the lookup and returns the customer
-    data as a JSON response. If no customer is found, it raises an HTTP 404 error
+    This endpoint handles HTTP GET requests to fetch a customer by ID.
     """
     try:
         logger.info("Getting customer with id=%s", customer_id)
@@ -71,15 +66,7 @@ def get_customer_by_id(customer_id: str, service: ServiceDep):
 def create_customer(customer_data: Customer, service: ServiceDep):
     """
     Creates a new client.
-
-    Args:
-        customer_data (Customer): Data of the customer to be created.
-        service (CustomerService): Customer service.
-
-    Returns:
-        Customer: Customer created.
     """
-
     logger.info("Creating customer with this data=%s", customer_data)
     created_customer = service.create_customer(customer_data)
     logger.info("Create customer request finished with response=%s", created_customer)
@@ -89,8 +76,6 @@ def create_customer(customer_data: Customer, service: ServiceDep):
 @router.delete("/customers/{customer_id}")
 def delete_customer(customer_id: str, service: ServiceDep):
     """
-    Deletes a customer by ID.
-
     Args:
         customer_id (str): Customer ID.
         service (CustomerService): Customer service.
@@ -113,8 +98,6 @@ def delete_customer(customer_id: str, service: ServiceDep):
 @router.put("/customers", response_model=CustomerUpdate)
 def update_customer(customer_update: Customer, service: ServiceDep):
     """
-    Fully updates a customer's data.
-
     Args:
         customer_update (Customer): Customer data to be updated.
         service (CustomerService): Customer service.
@@ -139,8 +122,6 @@ def update_customer(customer_update: Customer, service: ServiceDep):
 @router.patch("/customers", response_model=CustomerUpdate)
 def patch_customer(customer_update: CustomerUpdate, service: ServiceDep):
     """
-    Partially updates a customer's data.
-
     Args:
         customer_update (CustomerUpdate): Customer data to be updated.
         service (CustomerService): Customer service.

@@ -35,7 +35,61 @@ def fixture_service(mock_storage):
     return CustomerService(mock_storage)
 
 
-def test_create_customer_success(customer_create_row, mock_storage, service):
+def test_get_customer_by_id_successfully(customer, mock_storage, service):
+    """
+    Tests that the `get_customer_by_id` method retrieves the correct customer
+    when a valid customer ID is provided.
+    """
+    mock_storage.get_customer_by_id.return_value = customer
+
+    result = service.get_customer_by_id("01F8MECHZX3TBDSZ7XD96VR2H5")
+    assert result == customer
+    mock_storage.get_customer_by_id.assert_called_once_with(
+        "01F8MECHZX3TBDSZ7XD96VR2H5"
+    )
+
+
+def test_get_customer_by_id_handles_value_error(mock_storage, service):
+    """
+    Tests that the `get_customer_by_id` method raises a `ValueError`
+    when provided with an invalid customer ID.
+    """
+    mock_storage.get_customer_by_id.side_effect = ValueError()
+
+    with raises(ValueError):
+        service.get_customer_by_id("01F8MECHZX3TBDSZ7XD96VR2H0")
+
+    mock_storage.get_customer_by_id.assert_called_once_with(
+        "01F8MECHZX3TBDSZ7XD96VR2H0"
+    )
+
+
+def test_get_all_customers_successfully(customer, mock_storage, service):
+    """
+    Tests that the `get_all_customers` method correctly retrieves a list of customers
+    from the underlying storage service.
+    """
+    mock_storage.get_all_customers.return_value = [customer]
+
+    result = service.get_all_customers()
+    assert result == [customer]
+    mock_storage.get_all_customers.assert_called_once()
+
+
+def test_get_all_customers_handles_database_error(mock_storage, service):
+    """
+    Tests that the `get_all_customers` method raises a `DatabaseError`
+    when the underlying storage encounters a database issue.
+    """
+    mock_storage.get_all_customers.side_effect = DatabaseError()
+
+    with raises(DatabaseError):
+        service.get_all_customers()
+
+    mock_storage.get_all_customers.assert_called_once()
+
+
+def test_create_customer_success(customer, mock_storage, service):
     """
     Test the successful creation of a customer in the service layer.
 
@@ -47,17 +101,15 @@ def test_create_customer_success(customer_create_row, mock_storage, service):
         mock_storage (MagicMock): The mocked storage layer.
         service (CustomerService): The CustomerService instance.
     """
-    mock_storage.create_customer.return_value = customer_create_row
+    mock_storage.create_customer.return_value = customer
 
-    result = service.create_customer(customer_create_row)
-    assert result == customer_create_row
-    mock_storage.create_customer.assert_called_once_with(customer_create_row)
+    result = service.create_customer(customer)
+    assert result == customer
+    mock_storage.create_customer.assert_called_once_with(customer)
 
 
 def test_create_customer_integrity_error(customer_create_row, mock_storage, service):
     """
-    Test the handling of IntegrityError when creating a customer.
-
     Verifies that the service raises IntegrityError and interacts with
     the storage layer as expected.
 
@@ -76,8 +128,6 @@ def test_create_customer_integrity_error(customer_create_row, mock_storage, serv
 
 def test_create_customer_database_error(customer_create_row, mock_storage, service):
     """
-    Test the handling of DatabaseError when creating a customer.
-
     Verifies that the service raises DatabaseError and interacts with
     the storage layer as expected.
 
@@ -85,6 +135,7 @@ def test_create_customer_database_error(customer_create_row, mock_storage, servi
         customer_create_row (dict): The input data for creating a customer.
         mock_storage (MagicMock): The mocked storage layer.
         service (CustomerService): The CustomerService instance.
+    Test the DatabaseError when creating a customer in the service layer.
     """
     mock_storage.create_customer.side_effect = DatabaseError()
 
@@ -114,7 +165,7 @@ def test_put_customer_success(
 
 
 def test_put_customer_failure(
-    customer_put_update: Customer,
+    customer: Customer,
     mock_storage: CustomerStorage,
     service: CustomerService,
 ):
@@ -128,8 +179,8 @@ def test_put_customer_failure(
     """
     mock_storage.update_customer.side_effect = EntityNotFound("Customer not found")
     with raises(EntityNotFound):
-        service.update_customer(customer_put_update)
-    mock_storage.update_customer.assert_called_once_with(customer_put_update)
+        service.update_customer(customer)
+    mock_storage.update_customer.assert_called_once_with(customer)
 
 
 def test_patch_customer_sucess(
@@ -168,3 +219,27 @@ def test_patch_customer_failure(
     with raises(EntityNotFound):
         service.patch_customer(customer_patch_update)
     mock_storage.patch_customer.assert_called_once_with(customer_patch_update)
+
+
+def test_delete_customer_calls_storage(service):
+    """
+    Tests if the service calls the storage method to delete a customer.
+    """
+    customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
+
+    service.storage.delete_customer(customer_id)
+    service.storage.delete_customer.assert_called_once_with(customer_id)
+
+
+def test_delete_customer_key_error(service):
+    """
+    Tests if the service handles KeyError when deleting a customer.
+    """
+    customer_id = "01JGQ1XA2VW0K0WMTTJRXT5SXK"
+
+    service.storage.delete_customer.side_effect = KeyError("Simulating the KeyError")
+
+    with raises(KeyError):
+        service.delete_customer(customer_id)
+
+    service.storage.delete_customer.assert_called_once()

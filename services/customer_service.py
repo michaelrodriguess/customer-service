@@ -15,8 +15,6 @@ class CustomerService:
 
     def __init__(self, storage: CustomerStorage):
         """
-        Initialises the service with the given storage instance.
-
         Args:
             storage (CustomerStorage): Instance responsible for accessing customer data.
         """
@@ -25,25 +23,20 @@ class CustomerService:
 
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        This method delegates the retrieval of a customer to the `storage` layer,
-        which fetches the customer record from the database based on the provided ID.
+        Fetch a customer of the `storage` layer.
         """
         self.logger.info("Getting customer by id...")
         return self.storage.get_customer_by_id(id_customer)
 
     def get_all_customers(self) -> List[Customer]:
         """
-        This method delegates the retrieval of all customer records to the `storage` layer,
-        which handles the database operations. It returns a list of `Customer` objects
-        representing all customers in the system.
+        Fetch all customer records of the `storage` layer.
         """
         self.logger.info("Getting all customers...")
         return self.storage.get_all_customers()
 
     def create_customer(self, customer: Customer):
         """
-        Creates a new customer with the given data.
-
         Args:
             customer (Customer): Data of the customer to be created.
 
@@ -55,8 +48,6 @@ class CustomerService:
 
     def update_customer(self, customer: Customer) -> CustomerUpdate:
         """
-        Completely updates a customer's data.
-
         Args:
             customer (Customer): Updated customer data.
 
@@ -69,8 +60,6 @@ class CustomerService:
 
     def patch_customer(self, customer) -> CustomerUpdate:
         """
-        Partially updates a customer's data.
-
         Args:
             customer (CustomerUpdate): Partial data to be updated.
 
@@ -83,8 +72,6 @@ class CustomerService:
 
     def delete_customer(self, customer_id: str):
         """
-        Removes a client from the system by ID.
-
         Args:
             customer_id (str): Unique identifier of the customer to be removed.
 
