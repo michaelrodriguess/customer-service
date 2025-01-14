@@ -243,3 +243,16 @@ def test_delete_customer_key_error(service):
         service.delete_customer(customer_id)
 
     service.storage.delete_customer.assert_called_once()
+
+
+def test_get_customer_by_email(service, customer):
+    """
+    Test if the email given is the same as customer, and calls storage.
+    """
+    customer_email = "johndoe@example.com"
+
+    service.storage.get_customer_by_email.return_value = customer
+
+    result = service.storage.get_customer_by_email(customer_email)
+    assert result == customer
+    service.storage.get_customer_by_email.assert_called_once_with(customer_email)

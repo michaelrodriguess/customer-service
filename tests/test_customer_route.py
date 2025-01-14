@@ -222,7 +222,7 @@ def test_patch_customer_entity_not_found(client, service, customer_patch_update_
     assert response.status_code == 404
 
 
-def test_route_delete_customer(client, service):
+def test_router_delete_customer(client, service):
     """
     Tests the deleting a customer route.
     """
@@ -233,3 +233,17 @@ def test_route_delete_customer(client, service):
 
     assert response.status_code == 204
     service.delete_customer.assert_called_once_with(customer_id)
+
+
+def test_router_get_customer_by_email(client, service, customer_json):
+    """
+    Tests getting a customer by email.
+    """
+    customer_email = "johndoe@example.com"
+
+    service.get_customer_by_email.return_value = customer_json
+    response = client.get(f"/customers/email/{customer_email}")
+
+    assert response.status_code == 200
+    assert response.json() == customer_json
+    service.get_customer_by_email.assert_called_once_with(customer_email)

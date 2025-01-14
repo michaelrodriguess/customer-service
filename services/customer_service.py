@@ -21,16 +21,23 @@ class CustomerService:
         self.logger = logging.getLogger(__name__)
         self.storage = storage
 
+    def get_customer_by_email(self, customer_email: str) -> Customer:
+        """
+        Fetch a customer by email of the `storage` layer.
+        """
+        self.logger.info("Getting customer by email...")
+        return self.storage.get_customer_by_email(customer_email)
+
     def get_customer_by_id(self, id_customer: str) -> Customer:
         """
-        Fetch a customer of the `storage` layer.
+        Fetch a customer by ID of the `storage` layer.
         """
         self.logger.info("Getting customer by id...")
         return self.storage.get_customer_by_id(id_customer)
 
     def get_all_customers(self) -> List[Customer]:
         """
-        Fetch all customer records of the `storage` layer.
+        Fetch all customers records of the `storage` layer.
         """
         self.logger.info("Getting all customers...")
         return self.storage.get_all_customers()

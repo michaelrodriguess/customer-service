@@ -30,6 +30,21 @@ def get_customer_service(request: Request):
 ServiceDep = Annotated[CustomerService, Depends(get_customer_service)]
 
 
+@router.get("/customers/email/{customer_email}", response_model=Customer)
+def get_customer_by_email(customer_email: str, service: ServiceDep):
+    """
+    This endpoint handles HTTP GET requests to fetch a customer by email.
+    """    
+    try:
+        logger.info("Genting customer with email=%s", customer_email)
+        customer = service.get_customer_by_email(customer_email)
+        logger.info("Get customer by email request finished with response=%s", customer)
+        return customer
+    except ValueError as ex:
+        logger.warning("Customer not found: id=%s", customer_email)
+        raise HTTPException(status_code=404, detail=str(ex)) from ex
+
+
 @router.get("/customers", response_model=List[Customer])
 def get_all_customers(service: ServiceDep):
     """
