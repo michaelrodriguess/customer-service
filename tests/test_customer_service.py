@@ -97,7 +97,7 @@ def test_create_customer_success(customer, mock_storage, service):
     to create a customer and returns the expected result.
 
     Args:
-        customer_create_row (dict): The input data for creating a customer.
+        customer (dict): The input data for creating a customer.
         mock_storage (MagicMock): The mocked storage layer.
         service (CustomerService): The CustomerService instance.
     """
@@ -108,31 +108,31 @@ def test_create_customer_success(customer, mock_storage, service):
     mock_storage.create_customer.assert_called_once_with(customer)
 
 
-def test_create_customer_integrity_error(customer_create_row, mock_storage, service):
+def test_create_customer_integrity_error(customer, mock_storage, service):
     """
     Verifies that the service raises IntegrityError and interacts with
     the storage layer as expected.
 
     Args:
-        customer_create_row (dict): The input data for creating a customer.
+        customer (dict): The input data for creating a customer.
         mock_storage (MagicMock): The mocked storage layer.
         service (CustomerService): The CustomerService instance.
     """
     mock_storage.create_customer.side_effect = IntegrityError()
 
     with raises(IntegrityError):
-        service.create_customer(customer_create_row)
+        service.create_customer(customer)
 
-    mock_storage.create_customer.assert_called_once_with(customer_create_row)
+    mock_storage.create_customer.assert_called_once_with(customer)
 
 
-def test_create_customer_database_error(customer_create_row, mock_storage, service):
+def test_create_customer_database_error(customer, mock_storage, service):
     """
     Verifies that the service raises DatabaseError and interacts with
     the storage layer as expected.
 
     Args:
-        customer_create_row (dict): The input data for creating a customer.
+        customer (dict): The input data for creating a customer.
         mock_storage (MagicMock): The mocked storage layer.
         service (CustomerService): The CustomerService instance.
     Test the DatabaseError when creating a customer in the service layer.
@@ -140,9 +140,9 @@ def test_create_customer_database_error(customer_create_row, mock_storage, servi
     mock_storage.create_customer.side_effect = DatabaseError()
 
     with raises(DatabaseError):
-        service.create_customer(customer_create_row)
+        service.create_customer(customer)
 
-    mock_storage.create_customer.assert_called_once_with(customer_create_row)
+    mock_storage.create_customer.assert_called_once_with(customer)
 
 
 def test_put_customer_success(

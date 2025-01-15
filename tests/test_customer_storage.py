@@ -88,7 +88,7 @@ def test_get_customer_by_id_value_error(cursor, storage):
     cursor.fetchone.assert_called_once()
 
 
-def test_get_all_customer_success(cursor, storage, customer_create_row, customer_row):
+def test_get_all_customer_success(cursor, storage, customer, customer_row):
     """
     Test that `get_all_customers` retrieves all active customers from the database
     and maps the results to the expected customer model.
@@ -96,7 +96,7 @@ def test_get_all_customer_success(cursor, storage, customer_create_row, customer
     cursor.fetchall.return_value = [customer_row]
 
     result = storage.get_all_customers()
-    assert result == [customer_create_row]
+    assert result == [customer]
 
     cursor.execute.assert_called_once_with
     (
@@ -167,7 +167,9 @@ def test_create_customer_database_error(storage, cursor, customer):
     storage.db.commit.assert_not_called()
 
 
-def test_put_customer_success(cursor, storage: CustomerStorage, customer: Customer):
+def test_put_customer_success(
+    cursor, put_tuple, storage: CustomerStorage, customer: Customer
+):
     """
     Test the successful update of a customer.
 
@@ -178,14 +180,7 @@ def test_put_customer_success(cursor, storage: CustomerStorage, customer: Custom
         storage (CustomerStorage): The storage instance.
         customer_put_update (Customer): The customer data to update.
     """
-    cursor.fetchone.return_value = (
-        customer.id,
-        customer.name,
-        customer.email,
-        customer.active,
-        customer.created_at,
-        customer.updated_at,
-    )
+    cursor.fetchone.return_value = put_tuple
 
     updated_customer = storage.update_customer(customer)
 
@@ -210,7 +205,7 @@ def test_put_customer_success(cursor, storage: CustomerStorage, customer: Custom
 
 
 def test_put_customer_not_exist(
-    cursor, storage: CustomerStorage, not_customer_update_put: Customer
+    cursor, storage: CustomerStorage, invalid_customer_update_put: Customer
 ):
     """
     Test handling of EntityNotFound when updating a non-existent customer.
@@ -218,14 +213,15 @@ def test_put_customer_not_exist(
     Args:
         cursor (MagicMock): The mock cursor object.
         storage (CustomerStorage): The storage instance.
-        not_customer_update_put (Customer): The non-existent customer data.
+        invalid_customer_update_put (Customer): The non-existent customer data.
     """
     cursor.fetchone.return_value = None
 
     with raises(
-        EntityNotFound, match=f"Customer with id {not_customer_update_put.id} not found"
+        EntityNotFound,
+        match=f"Customer with id {invalid_customer_update_put.id} not found",
     ):
-        storage.update_customer(not_customer_update_put)
+        storage.update_customer(invalid_customer_update_put)
 
 
 def test_put_customer_integrity_error(
@@ -263,7 +259,10 @@ def test_put_customer_database_error(
 
 
 def test_patch_customer_sucess(
-    cursor, storage: CustomerStorage, customer_patch_update: CustomerUpdate
+    cursor,
+    patch_tuple,
+    storage: CustomerStorage,
+    customer_patch_update: CustomerUpdate,
 ):
     """
     Test the successful partial update of a customer.
@@ -275,13 +274,7 @@ def test_patch_customer_sucess(
         storage (CustomerStorage): The storage instance.
         customer_patch_update (CustomerUpdate): Partial customer data to update.
     """
-    cursor.fetchone.return_value = (
-        customer_patch_update.id,
-        customer_patch_update.name,
-        customer_patch_update.email,
-        customer_patch_update.active,
-        customer_patch_update.updated_at,
-    )
+    cursor.fetchone.return_value = patch_tuple
 
     update_customer = storage.patch_customer(customer_patch_update)
 
@@ -425,12 +418,12 @@ def test_get_customer_by_email(storage, cursor, customer, customer_row):
     assert result == customer
 
     cursor.execute.assert_called_once_with(
-                    """
+        """
                     SELECT id, name, email, created_at, updated_at, active
                     FROM customers
                     WHERE email = %s AND active = true;
                     """,
-                    (customer_email,),
+        (customer_email,),
     )
 
 

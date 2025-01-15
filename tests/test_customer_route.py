@@ -91,12 +91,12 @@ def customer_patch_json():
     }
 
 
-def test_router_get_all_customers(service, client, customer_create_row, customer_json):
+def test_router_get_all_customers(service, client, customer, customer_json):
     """
     This test verifies that the route returns the correct JSON response for all customers
     and ensures that the `get_all_customers` method of the mocked service is called once.
     """
-    service.get_all_customers.return_value = [customer_create_row]
+    service.get_all_customers.return_value = [customer]
     response = client.get("/customers")
 
     assert response.status_code == 200
@@ -104,12 +104,12 @@ def test_router_get_all_customers(service, client, customer_create_row, customer
     service.get_all_customers.assert_called_once()
 
 
-def test_router_get_customer_by_id(service, client, customer_create_row, customer_json):
+def test_router_get_customer_by_id(service, client, customer, customer_json):
     """
     This test verifies that the route returns the correct JSON response for a customer
     and ensures that the `get_customer_by_id` method of the mocked service is called with the correct ID.
     """
-    service.get_customer_by_id.return_value = customer_create_row
+    service.get_customer_by_id.return_value = customer
     response = client.get("/customers/01F8MECHZX3TBDSZ7XD96VR2H5")
 
     assert response.status_code == 200
@@ -129,7 +129,7 @@ def test_router_get_customer_by_id_value_error(service, client):
     service.get_customer_by_id.assert_called_once_with("01F8MECHZX3TBDSZ7XD96VR2H5")
 
 
-def test_router_create_customer(service, client, customer_create_row, customer_json):
+def test_router_create_customer(service, client, customer, customer_json):
     """
     Test customer creation route.
     """
@@ -138,7 +138,7 @@ def test_router_create_customer(service, client, customer_create_row, customer_j
 
     assert response.status_code == 201
     assert response.json() == customer_json
-    service.create_customer.assert_called_once_with(customer_create_row)
+    service.create_customer.assert_called_once_with(customer)
 
 
 def test_put_customer_success(

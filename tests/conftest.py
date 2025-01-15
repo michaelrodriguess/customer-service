@@ -65,7 +65,7 @@ def customer_patch_update():
 
 
 @fixture
-def not_customer_update_put():
+def invalid_customer_update_put():
     """
     Provides a mock `Customer` object with mismatched data for negative test cases.
 
@@ -74,24 +74,6 @@ def not_customer_update_put():
     """
     return Customer(
         id="01F8MECHZX3TBDSZ7XD96VR2H5", name="John Doe", email="test@test.com"
-    )
-
-
-@fixture
-def customer_create_row():
-    """
-    Provides a mock `Customer` object representing a new customer row for testing.
-
-    Returns:
-        Customer: A customer instance with dummy data for insertion tests.
-    """
-    return Customer(
-        id="01F8MECHZX3TBDSZ7XD96VR2H5",
-        name="John Doe",
-        email="johndoe@example.com",
-        active=True,
-        created_at=datetime(2024, 1, 1, 12, 0, 0),
-        updated_at=None,
     )
 
 
@@ -107,4 +89,27 @@ def customer_row():
         datetime(2024, 1, 1, 12, 0, 0),
         None,
         True,
+    )
+
+
+@fixture
+def put_tuple():
+    return (
+        "01F8MECHZX3TBDSZ7XD96VR2H5",
+        "John Doe",
+        "johndoe@example.com",
+        True,
+        datetime(2024, 1, 1, 12, 0, 0),
+        None,
+    )
+
+
+@fixture
+def patch_tuple():
+    return (
+        "01F8MECHZX3TBDSZ7XD96VR2H5",
+        "John Doe",
+        "johndoe@example.com",
+        False,
+        datetime(2024, 1, 1, 0, 0, 0),
     )
