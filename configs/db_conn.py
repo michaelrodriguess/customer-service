@@ -18,11 +18,6 @@ def get_database_connection():
     Returns:
         connection: The connection to the PostgreSQL database.
     """
-    db_connection = psycopg2.connect(
-        database=os.getenv("DATABASE_NAME"),
-        host=os.getenv("DATABASE_HOST"),
-        user=os.getenv("DATABASE_USER"),
-        password=os.getenv("DATABASE_PASSWORD"),
-        port=os.getenv("DATABASE_PORT"),
-    )
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    db_connection = psycopg2.connect(DATABASE_URL)
     return db_connection
