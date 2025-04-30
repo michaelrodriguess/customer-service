@@ -1,9 +1,12 @@
 """
 This module handles customer routes.
 """
-from fastapi import APIRouter, HTTPException, Response, Depends, Request, status
+
 import logging
 from typing import Annotated, List
+
+from fastapi import APIRouter, HTTPException, Response, Depends, Request, status
+
 from services.customer_service import CustomerService
 from models.customer_model import Customer, CustomerUpdate
 from exceptions.customer_exceptions import EntityNotFound
@@ -14,7 +17,12 @@ logger = logging.getLogger(__name__)
 
 def get_customer_service(request: Request):
     """
-    Retrieves the client service instance from the request state.
+
+    Args:
+        request (Request): Object of the current request.
+
+    Returns:
+        CustomerService: Customer service.
     """
     return request.state.customer_service
 
@@ -83,7 +91,15 @@ def create_customer(customer_data: Customer, service: ServiceDep):
 @router.delete("/customers/{customer_id}")
 def delete_customer(customer_id: str, service: ServiceDep):
     """
-    Deletes a customer by ID.
+    Args:
+        customer_id (str): Customer ID.
+        service (CustomerService): Customer service.
+
+    Returns:
+        Response: HTTP response with status 204.
+
+    Raises:
+        HTTPException: If the customer is not found.
     """
     try:
         logger.info("Deleting customer with id=%s", customer_id)
@@ -97,7 +113,15 @@ def delete_customer(customer_id: str, service: ServiceDep):
 @router.put("/customers", response_model=CustomerUpdate)
 def update_customer(customer_update: Customer, service: ServiceDep):
     """
-    Fully updates a customer's data.
+    Args:
+        customer_update (Customer): Customer data to be updated.
+        service (CustomerService): Customer service.
+
+    Returns:
+        CustomerUpdate: Customer updated.
+
+    Raises:
+        HTTPException: If the customer is not found.
     """
     logger.info("Starting the process to fully update customer %s", customer_update)
     try:
@@ -113,7 +137,15 @@ def update_customer(customer_update: Customer, service: ServiceDep):
 @router.patch("/customers", response_model=CustomerUpdate)
 def patch_customer(customer_update: CustomerUpdate, service: ServiceDep):
     """
-    Partially updates a customer's data.
+    Args:
+        customer_update (CustomerUpdate): Customer data to be updated.
+        service (CustomerService): Customer service.
+
+    Returns:
+        CustomerUpdate: Customer updated.
+
+    Raises:
+        HTTPException: If the customer is not found.
     """
     logger.info("Starting the process to partially update customer %s", customer_update)
     try:

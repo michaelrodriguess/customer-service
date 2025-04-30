@@ -1,6 +1,7 @@
 """
 This module handles the initialisation of FastApi
 """
+
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -9,12 +10,11 @@ from services.customer_service import CustomerService
 from storages.customer_storage import CustomerStorage
 from routes.customer_router import router
 
-
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     """
     Method that handles FastApi configuration
     """

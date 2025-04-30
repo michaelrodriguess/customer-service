@@ -1,12 +1,13 @@
 """
 Module for managing customer data.
 """
+
 import logging
 from datetime import datetime
 from typing import List
 
 from psycopg2 import DatabaseError, IntegrityError, sql
-from psycopg2._psycopg import connection
+from psycopg2.extensions import connection
 
 from exceptions.customer_exceptions import EntityNotFound
 from models.customer_model import CustomerUpdate, Customer
@@ -16,9 +17,13 @@ class CustomerStorage:
     """
     This class handles customer data in the PostgreSQL database.
     """
+
     def __init__(self, db_connection: connection):
         """
         Initialises the class with the database connection.
+
+        Args:
+            db_connection (connection): Connection to the PostgreSQL database.
         """
         self.logger = logging.getLogger(__name__)
         self.db = db_connection
@@ -102,7 +107,15 @@ class CustomerStorage:
 
     def create_customer(self, customer: Customer) -> Customer:
         """
-        Creates a new client in the database.
+        Args:
+            customer (Customer): Instance of the customer to be created.
+
+        Returns:
+            Customer: The customer created.
+
+        Raises:
+            IntegrityError: If there is an integrity error in the database.
+            DatabaseError: If there is an error inserting the customer into the database.
         """
         self.logger.info("Starting operation to insert customer into the database.")
         try:
@@ -138,7 +151,13 @@ class CustomerStorage:
 
     def delete_customer(self, customer_id: str):
         """
-        Marks a customer as inactive in the database.
+
+        Args:
+            customer_id (str): The ID of the customer to be deleted.
+
+        Raises:
+            DatabaseError: If an error occurs when accessing the database.
+            KeyError: If the customer is not found or is already inactive.
         """
         self.logger.info("Deleting customer with id %s", customer_id)
         try:
@@ -164,16 +183,29 @@ class CustomerStorage:
 
     def map_customer_row_to_model(self, row: List) -> Customer:
         """
-        Maps a database row to a client model.
+
+        Args:
+            row (List): The row retrieved from the database.
+
+        Returns:
+            Customer: The mapped customer model.
         """
         return Customer(
             id=row[0], name=row[1], email=row[2], created_at=row[3], updated_at=row[4]
         )
 
-
-    def update_customer(self, customer_update) -> CustomerUpdate:
+    def update_customer(self, customer_update) -> Customer:
         """
-        Updates a client in the database with the new data provided.
+        Args:
+            customer_update (CustomerUpdate): The updated customer data.
+
+        Returns:
+            CustomerUpdate: The updated customer.
+
+        Raises:
+            EntityNotFound: If the customer is not found.
+            IntegrityError: If there is an integrity error in the database.
+            DatabaseError: If an error occurs when updating the customer's data.
         """
         self.logger.info(
             "Updating customer: %s, with id: %s",
@@ -187,7 +219,7 @@ class CustomerStorage:
                     UPDATE customers
                     SET name = %s, email = %s, updated_at = %s
                     WHERE id = %s AND active = true
-                    RETURNING id, name, email, active, updated_at;
+                    RETURNING id, name, email, active, created_at,updated_at;
                     """
                 )
                 cursor.execute(
@@ -209,7 +241,7 @@ class CustomerStorage:
 
                 self.db.commit()
                 self.logger.info("Customer %s updated in DB", customer_update.name)
-                return self.customer_transform(updated_customer)
+                return self.customer_transform_put(updated_customer)
 
         except IntegrityError as integrity_error:
             self.db.rollback()
@@ -227,7 +259,17 @@ class CustomerStorage:
 
     def patch_customer(self, customer_update: CustomerUpdate) -> CustomerUpdate:
         """
-        Partially updates a customer's data in the database.
+        Args:
+            customer_update (CustomerUpdate): The updated customer data.
+
+        Returns:
+            CustomerUpdate: The updated customer.
+
+        Raises:
+            EntityNotFound: If the customer is not found.
+            IntegrityError: If there is an integrity error in the database.
+            DatabaseError: If an error occurs when updating the customer's data.
+
         """
         self.logger.info(
             "Partial updating customer: %s, with id: %s",
@@ -236,21 +278,27 @@ class CustomerStorage:
         )
         try:
             with self.db.cursor() as cursor:
-                update_data = {
-                    key: value
-                    for key, value in customer_update.dict().items()
-                    if value is not None and key != "id"
-                }
-                set_string = sql.SQL(", ").join(
-                    [sql.Identifier(key) + sql.SQL(" = %s") for key in update_data]
+                update_data = customer_update.model_dump(exclude_none=True)
+                update_data.pop("id", None)
+
+                set_string = ""
+                values = []
+
+                for key, value in update_data.items():
+                    if set_string:
+                        set_string += ", "
+                    set_string += f"{key} = %s"
+                    values.append(value)
+
+                cursor.execute(
+                    """
+                    UPDATE customers
+                    SET {set_string}
+                    WHERE id = %s
+                    RETURNING id, name, email, active, updated_at;
+                    """.format(set_string=set_string),
+                    values + [customer_update.id],
                 )
-
-                query = sql.SQL(
-                    "UPDATE customers SET {set_string} WHERE id = %s RETURNING id, name, email, active, updated_at"
-                ).format(set_string=set_string)
-
-                cursor.execute(query, list(update_data.values()) + [customer_update.id])
-
                 updated_customer = cursor.fetchone()
 
                 if not updated_customer:
@@ -260,12 +308,12 @@ class CustomerStorage:
 
                 self.db.commit()
                 self.logger.info("Customer %s updated in DB", customer_update.name)
-                return self.customer_transform(updated_customer)
+                return self.customer_transform_patch(updated_customer)
 
         except IntegrityError as integrity_error:
             self.db.rollback()
             self.logger.error(
-               "Integrity error while updating customer. Customer data: %s. Details: %s",
+                "Integrity error while updating customer. Customer data: %s. Details: %s",
                 customer_update,
                 integrity_error,
             )
@@ -276,9 +324,34 @@ class CustomerStorage:
             self.logger.error("Failed to update customer in DB: %s", ex)
             raise
 
-    def customer_transform(self, customer_tuple: tuple) -> CustomerUpdate:
+    def customer_transform_put(self, customer_tuple: tuple) -> Customer:
         """
-        Converts a customer's data into a tuple for the CustomerUpdate model.
+        Converts customer data from a tuple into the Customer model.
+
+        Args:
+            customer_tuple (tuple): The tuple containing customer data.
+
+        Returns:
+            Customer: The transformed customer model.
+        """
+        return Customer(
+            id=customer_tuple[0],
+            name=customer_tuple[1],
+            email=customer_tuple[2],
+            active=customer_tuple[3],
+            created_at=customer_tuple[4],
+            updated_at=customer_tuple[5],
+        )
+
+    def customer_transform_patch(self, customer_tuple: tuple) -> CustomerUpdate:
+        """
+        Converts customer data from a tuple into the CustomerUpdate model.
+
+        Args:
+            customer_tuple (tuple): The tuple containing customer data.
+
+        Returns:
+            CustomerUpdate: The transformed customer update model.
         """
         return CustomerUpdate(
             id=customer_tuple[0],

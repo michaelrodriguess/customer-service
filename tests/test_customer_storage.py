@@ -2,12 +2,14 @@
 Tests for CustomerStorage using mock database interactions.
 """
 
-from unittest.mock import MagicMock
-import pytest
-from pytest import fixture, raises
 from datetime import datetime
-from psycopg2 import DatabaseError, IntegrityError
+from unittest.mock import MagicMock, ANY
+import pytest
+from psycopg2 import DatabaseError, IntegrityError, sql
+from pytest import fixture, raises
 from storages.customer_storage import CustomerStorage
+from exceptions.customer_exceptions import EntityNotFound
+from models.customer_model import Customer, CustomerUpdate
 
 
 @fixture(name="cursor")
@@ -165,6 +167,191 @@ def test_create_customer_database_error(storage, cursor, customer):
     storage.db.commit.assert_not_called()
 
 
+def test_put_customer_success(
+    cursor, put_tuple, storage: CustomerStorage, customer: Customer
+):
+    """
+    Test the successful update of a customer.
+
+    Verifies that the customer data is correctly updated in the storage layer.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_put_update (Customer): The customer data to update.
+    """
+    cursor.fetchone.return_value = put_tuple
+
+    updated_customer = storage.update_customer(customer)
+
+    assert updated_customer == customer
+    storage.db.commit.assert_called_once()
+    cursor.execute.assert_called_once_with(
+        sql.SQL(
+            """
+                    UPDATE customers
+                    SET name = %s, email = %s, updated_at = %s
+                    WHERE id = %s AND active = true
+                    RETURNING id, name, email, active, created_at,updated_at;
+                    """
+        ),
+        (
+            customer.name,
+            customer.email,
+            ANY,
+            customer.id,
+        ),
+    )
+
+
+def test_put_customer_not_exist(
+    cursor, storage: CustomerStorage, invalid_customer_update_put: Customer
+):
+    """
+    Test handling of EntityNotFound when updating a non-existent customer.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        invalid_customer_update_put (Customer): The non-existent customer data.
+    """
+    cursor.fetchone.return_value = None
+
+    with raises(
+        EntityNotFound,
+        match=f"Customer with id {invalid_customer_update_put.id} not found",
+    ):
+        storage.update_customer(invalid_customer_update_put)
+
+
+def test_put_customer_integrity_error(
+    cursor, storage: CustomerStorage, customer: Customer
+):
+    """
+    Test handling of IntegrityError during customer update.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_put_update (Customer): The customer data to update.
+    """
+    cursor.execute.side_effect = IntegrityError()
+
+    with raises(IntegrityError):
+        storage.update_customer(customer)
+
+
+def test_put_customer_database_error(
+    cursor, storage: CustomerStorage, customer: Customer
+):
+    """
+    Test handling of DatabaseError during customer update.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_put_update (Customer): The customer data to update.
+    """
+    cursor.execute.side_effect = DatabaseError()
+
+    with raises(DatabaseError):
+        storage.update_customer(customer)
+
+
+def test_patch_customer_sucess(
+    cursor,
+    patch_tuple,
+    storage: CustomerStorage,
+    customer_patch_update: CustomerUpdate,
+):
+    """
+    Test the successful partial update of a customer.
+
+    Verifies that partial customer data updates are correctly handled.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_patch_update (CustomerUpdate): Partial customer data to update.
+    """
+    cursor.fetchone.return_value = patch_tuple
+
+    update_customer = storage.patch_customer(customer_patch_update)
+
+    assert update_customer == customer_patch_update
+    storage.db.commit.assert_called_once()
+    cursor.execute.assert_called_once_with(
+        """
+                    UPDATE customers
+                    SET name = %s, email = %s, active = %s, updated_at = %s
+                    WHERE id = %s
+                    RETURNING id, name, email, active, updated_at;
+                    """,
+        (
+            [
+                customer_patch_update.name,
+                customer_patch_update.email,
+                customer_patch_update.active,
+                customer_patch_update.updated_at,
+                customer_patch_update.id,
+            ]
+        ),
+    )
+
+
+def test_patch_customer_not_exist(
+    cursor, storage: CustomerStorage, customer_patch_update: CustomerUpdate
+):
+    """
+    Test handling of EntityNotFound during partial update of a non-existent customer.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_patch_update (CustomerUpdate): Partial customer data to update.
+    """
+    cursor.fetchone.return_value = None
+
+    with raises(
+        EntityNotFound, match=f"Customer with id {customer_patch_update.id} not found"
+    ):
+        storage.patch_customer(customer_patch_update)
+
+
+def test_patch_customer_integrity_error(
+    cursor, storage: CustomerStorage, customer_patch_update: CustomerUpdate
+):
+    """
+    Test handling of IntegrityError during partial customer update.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_patch_update (CustomerUpdate): Partial customer data to patch update.
+    """
+    cursor.execute.side_effect = IntegrityError()
+
+    with raises(IntegrityError):
+        storage.patch_customer(customer_patch_update)
+
+
+def test_patch_customer_database_error(
+    cursor, storage: CustomerStorage, customer_patch_update: CustomerUpdate
+):
+    """
+    Test handling of DatabaseError during partial customer update.
+
+    Args:
+        cursor (MagicMock): The mock cursor object.
+        storage (CustomerStorage): The storage instance.
+        customer_patch_update (CustomerUpdate): Partial customer data to update.
+    """
+    cursor.execute.side_effect = DatabaseError()
+
+    with raises(DatabaseError):
+        storage.patch_customer(customer_patch_update)
+
+
 def test_delete_customer(storage, cursor):
     """
     Tests customer deletion by verifying the deactivation query execution.
@@ -231,12 +418,12 @@ def test_get_customer_by_email(storage, cursor, customer, customer_row):
     assert result == customer
 
     cursor.execute.assert_called_once_with(
-                    """
+        """
                     SELECT id, name, email, created_at, updated_at, active
                     FROM customers
                     WHERE email = %s AND active = true;
                     """,
-                    (customer_email,),
+        (customer_email,),
     )
 
 

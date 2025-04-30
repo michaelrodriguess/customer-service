@@ -1,17 +1,18 @@
 """
 This module deals with models, specifying what each model needs and uses.
 """
-from pydantic import BaseModel, EmailStr, Field, model_validator
+
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, model_validator
 import ulid
+from pydantic import BaseModel, EmailStr, Field
 
 
 class Customer(BaseModel):
     """
     Represents a customer with information such as name, email and status.
     """
+
     id: str = Field(
         default_factory=lambda: str(ulid.new()),
         description="Unique customer identifier in ULID format.",
@@ -33,6 +34,7 @@ class CustomerUpdate(BaseModel):
     """
     Represents the partial update of a customer. At least one field must be provided.
     """
+
     id: str = Field(..., description="Unique customer identifier in ULID format.")
     name: Optional[str] = Field(None, description="Customer name (optional).")
     email: Optional[EmailStr] = Field(
@@ -43,18 +45,3 @@ class CustomerUpdate(BaseModel):
         default_factory=datetime.now,
         description="Customer update date (optional).",
     )
-
-    @model_validator(mode="before")
-    def check_at_least_one_field(cls, values):
-        """
-        Validates that at least one field, in addition to ‘id’, is provided for updating.
-        """
-        required_keys = [
-            key for key, value in values.items() if key != "id" and value is not None
-        ]
-        print(required_keys)
-
-        if not required_keys:
-            raise ValueError("At least one field other than 'id' must be provided.")
-
-        return values
